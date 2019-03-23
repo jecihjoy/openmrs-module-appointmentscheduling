@@ -17,11 +17,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
-import org.openmrs.Location;
-import org.openmrs.Patient;
-import org.openmrs.PatientIdentifier;
-import org.openmrs.Provider;
-import org.openmrs.Visit;
+import org.openmrs.*;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
@@ -753,21 +749,21 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 
 	@Override
 	public List<Appointment> getAppointmentsByConstraints(Date fromDate,
-			Date toDate, Location location, Provider provider,
-			AppointmentType type, AppointmentStatus status) throws APIException {
+							  Date toDate, Location location, Provider provider,
+							  AppointmentType type, AppointmentStatus status, VisitType visitType) throws APIException {
 		return getAppointmentsByConstraints(fromDate, toDate, location,
-				provider, type, null, status);
+				provider, type, null, status, visitType);
 	}
 
 	@Override
 	public List<Appointment> getAppointmentsByConstraints(Date fromDate,
 			Date toDate, Location location, Provider provider,
 			AppointmentType type, Patient patient,
-			List<AppointmentStatus> statuses) {
+			List<AppointmentStatus> statuses, VisitType visitType) {
 
 		List<Appointment> appointments = appointmentDAO
 				.getAppointmentsByConstraints(fromDate, toDate, provider, type,
-						statuses, patient);
+						statuses, patient, visitType);
 
 		List<Appointment> appointmentsInLocation = new LinkedList<Appointment>();
 
@@ -801,16 +797,16 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 	@Transactional(readOnly = true)
 	public List<Appointment> getAppointmentsByConstraints(Date fromDate,
 			Date toDate, Location location, Provider provider,
-			AppointmentType type, Patient patient, AppointmentStatus status)
-			throws APIException {
+			AppointmentType type, Patient patient, AppointmentStatus status,
+			VisitType visitType) throws APIException {
 
 		if (status == null) {
 			return getAppointmentsByConstraints(fromDate, toDate, location,
-					provider, type, patient, new ArrayList<AppointmentStatus>());
+					provider, type, patient, new ArrayList<AppointmentStatus>(), visitType);
 		}
 
 		return getAppointmentsByConstraints(fromDate, toDate, location,
-				provider, type, patient, Arrays.asList(status));
+				provider, type, patient, Arrays.asList(status), visitType);
 	}
 
 	@Override

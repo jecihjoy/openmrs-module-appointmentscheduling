@@ -26,6 +26,7 @@ import org.hibernate.criterion.Restrictions;
 import org.openmrs.Patient;
 import org.openmrs.Provider;
 import org.openmrs.Visit;
+import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
 import org.openmrs.module.appointmentscheduling.Appointment;
 import org.openmrs.module.appointmentscheduling.Appointment.AppointmentStatus;
@@ -33,6 +34,8 @@ import org.openmrs.module.appointmentscheduling.AppointmentBlock;
 import org.openmrs.module.appointmentscheduling.AppointmentType;
 import org.openmrs.module.appointmentscheduling.TimeSlot;
 import org.openmrs.module.appointmentscheduling.api.db.AppointmentDAO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.openmrs.module.appointmentscheduling.Appointment.AppointmentStatus.CANCELLED;
@@ -43,7 +46,7 @@ import static org.openmrs.module.appointmentscheduling.Appointment.AppointmentSt
 public class HibernateAppointmentDAO extends HibernateSingleClassDAO
 		implements
 			AppointmentDAO {
-
+	private static final Logger log = LoggerFactory.getLogger(HibernateAppointmentDAO.class);
 	public HibernateAppointmentDAO() {
 		super(Appointment.class);
 	}
@@ -88,8 +91,8 @@ public class HibernateAppointmentDAO extends HibernateSingleClassDAO
 	@Override
 	@Transactional(readOnly = true)
 	public List<Appointment> getAppointmentsByConstraints(Date fromDate,
-			Date toDate, Provider provider, AppointmentType appointmentType,
-			List<AppointmentStatus> statuses, Patient patient)
+														  Date toDate, Provider provider, AppointmentType appointmentType,
+														  List<AppointmentStatus> statuses, Patient patient, VisitType visitType)
 			throws APIException {
 		if (fromDate != null && toDate != null && !fromDate.before(toDate))
 			throw new APIException("fromDate can not be later than toDate");
@@ -107,8 +110,10 @@ public class HibernateAppointmentDAO extends HibernateSingleClassDAO
 				stringQuery += " AND appointment.status IN (:statuses)";
 			if (appointmentType != null)
 				stringQuery += " AND appointment.appointmentType=:appointmentType";
+			if (visitType != null)
+				stringQuery += " AND appointment.appointmentType.visitType = :visitType";
 			if (patient != null) {
-				stringQuery += " AND appointment.patient=:patient";
+				stringQuery += " AND appointment.patient = :patient";
 			}
 
             stringQuery += " ORDER BY appointment.timeSlot.startDate";
@@ -126,8 +131,11 @@ public class HibernateAppointmentDAO extends HibernateSingleClassDAO
 				query.setParameterList("statuses", statuses);
 			if (appointmentType != null)
 				query.setParameter("appointmentType", appointmentType);
-			if (patient != null)
+			if (visitType != null)
+				query.setParameter("visitType", visitType);
+            if (patient != null)
 				query.setParameter("patient", patient);
+
 
 			return query.list();
 		}
@@ -137,9 +145,9 @@ public class HibernateAppointmentDAO extends HibernateSingleClassDAO
 	@Transactional(readOnly = true)
 	public List<Appointment> getAppointmentsByConstraints(Date fromDate,
 			Date toDate, Provider provider, AppointmentType appointmentType,
-			AppointmentStatus status, Patient patient) throws APIException {
+			AppointmentStatus status, Patient patient, VisitType visitType) throws APIException {
 		return getAppointmentsByConstraints(fromDate, toDate, provider,
-				appointmentType, Arrays.asList(status), patient);
+				appointmentType, Arrays.asList(status), patient, visitType);
 	}
 
 	@Override
