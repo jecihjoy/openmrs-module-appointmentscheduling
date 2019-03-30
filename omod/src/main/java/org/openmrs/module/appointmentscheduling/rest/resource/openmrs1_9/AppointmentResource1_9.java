@@ -6,6 +6,7 @@ import org.openmrs.Provider;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.appointmentscheduling.Appointment;
 import org.openmrs.module.appointmentscheduling.AppointmentType;
+import org.openmrs.module.appointmentscheduling.TimeSlot;
 import org.openmrs.module.appointmentscheduling.api.AppointmentService;
 import org.openmrs.module.appointmentscheduling.exception.TimeSlotFullException;
 import org.openmrs.module.appointmentscheduling.rest.controller.AppointmentRestController;
@@ -78,13 +79,15 @@ public class AppointmentResource1_9 extends DataDelegatingCrudResource<Appointme
 	@Override
 	public DelegatingResourceDescription getCreatableProperties() {
 		DelegatingResourceDescription description = new DelegatingResourceDescription();
-		description.addRequiredProperty("timeSlot");
+		description.addProperty("timeSlot");
 		description.addProperty("visit");
 		description.addRequiredProperty("patient");
 		description.addRequiredProperty("status");
-		description.addProperty("reason");
+		description.addProperty("provider");
 		description.addProperty("cancelReason");
 		description.addRequiredProperty("appointmentType");
+		description.addProperty("location");
+		description.addProperty("date");
 		return description;
 	}
 	
@@ -146,7 +149,7 @@ public class AppointmentResource1_9 extends DataDelegatingCrudResource<Appointme
 		}
 		Context.getService(AppointmentService.class).purgeAppointment(appointment);
 	}
-	
+
 	@Override
 	protected PageableResult doGetAll(RequestContext context) throws ResponseException {
 		AppointmentService service = Context.getService(AppointmentService.class);

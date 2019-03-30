@@ -15,16 +15,20 @@ package org.openmrs.module.appointmentscheduling.api.db.hibernate;
 
 import java.util.List;
 
+import org.apache.commons.logging.Log;
 import org.hibernate.Criteria;
 import org.openmrs.api.db.hibernate.DbSessionFactory;  
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.module.appointmentscheduling.api.db.SingleClassDAO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 public abstract class HibernateSingleClassDAO<T> implements SingleClassDAO<T> {
+	Logger log = LoggerFactory.getLogger(HibernateSingleClassDAO.class);
 	
 	@Autowired
 	protected DbSessionFactory sessionFactory;

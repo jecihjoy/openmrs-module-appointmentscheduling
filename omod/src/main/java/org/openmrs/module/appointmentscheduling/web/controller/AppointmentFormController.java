@@ -41,10 +41,14 @@ import org.openmrs.module.appointmentscheduling.validator.AppointmentValidator;
 import org.openmrs.module.appointmentscheduling.web.AppointmentTypeEditor;
 import org.openmrs.module.appointmentscheduling.web.ProviderEditor;
 import org.openmrs.module.appointmentscheduling.web.TimeSlotEditor;
+import org.openmrs.module.webservices.rest.web.response.ResponseException;
+import org.openmrs.module.webservices.validation.ValidationException;
 import org.openmrs.web.WebConstants;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -209,7 +213,13 @@ public class AppointmentFormController {
 						VisitType defaultVisitType = Context.getVisitService().getVisitType(visitTypeId);
 						
 						Visit visit = new Visit(appointment.getPatient(), defaultVisitType, new Date());
-						visit.setLocation(appointment.getTimeSlot().getAppointmentBlock().getLocation());
+						if( appointment.getTimeSlot() != null){
+							visit.setLocation(appointment.getTimeSlot().getAppointmentBlock().getLocation());
+						}else{
+							Errors errors = new BindException(appointment, "");
+							errors.reject("appointmentscheduling.Appointment.error.emptyTimeSlot");
+							throw new ValidationException("appointmentscheduling.Appointment.error.emptyTimeSlot", errors);
+						}
 						visit = Context.getVisitService().saveVisit(visit);
 						appointment.setVisit(visit);
 					} else
