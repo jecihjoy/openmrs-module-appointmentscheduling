@@ -17,11 +17,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
-import org.openmrs.Location;
-import org.openmrs.Patient;
-import org.openmrs.PatientIdentifier;
-import org.openmrs.Provider;
-import org.openmrs.Visit;
+import org.openmrs.*;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
@@ -57,6 +53,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * It is a default implementation of {@link AppointmentService}.
@@ -78,6 +78,7 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 
     private AppointmentRequestDAO appointmentRequestDAO;
 
+    private List<Appointment> appointments;
 	/**
 	 * Getters and Setters
 	 */
@@ -416,6 +417,22 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 	@Transactional(readOnly = true)
 	public Appointment getAppointmentByVisit(Visit visit) {
 		return getAppointmentDAO().getAppointmentByVisit(visit);
+	}
+
+	//appointment reports
+
+	@Override
+	public List<Appointment> getDailyAppointmentReports(Date date, Provider provider, AppointmentType type, AppointmentStatus status,
+														Patient patient, VisitType visitType, Location location) throws APIException {
+		log.error(".getDairyAppointments(); was called here");
+		return getAppointmentDAO().getDailyAppointments(date, provider, type, status, patient, visitType, location);
+	}
+
+	@Override
+	public List<Appointment> getMonthlyAppointmentReports(Date fromDate, Date toDate, Provider provider, AppointmentType type, AppointmentStatus status,
+														Patient patient, VisitType visitType, Location location) throws APIException {
+		appointments =  getAppointmentDAO().getMonthlyAppointmentsReports(fromDate, toDate, provider, type, status, patient, visitType, location);
+		return uniqueAppointmentsByDate(appointments);
 	}
 
 	// TimeSlot
@@ -911,7 +928,7 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 				switch (status) {
 					case SCHEDULED :
 					case WAITING :
-					case WALKIN :
+					case  WALKIN :
 						changeAppointmentStatus(appointment,
 								AppointmentStatus.MISSED);
 						break;
@@ -1138,8 +1155,27 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 				appointment);
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public Integer getAppointmentDailyCount(Appointment appointment){
+		int count = 0;
+		for (Appointment app : appointments){
+			if(app.getTimeSlot().getStartDate() == appointment.getTimeSlot().getStartDate()){
+				count ++;
+			}
+		}
+		log.error("appointment count  " +count);
+		return count;
+	}
+
+	@Override
+	public List<Appointment> getDefaultersList(int minDays, int maxDays, Provider provider, AppointmentType type,
+											   VisitType visitType, Location location) throws APIException {
+		return getAppointmentDAO().getDefaultersList(minDays, maxDays, provider, type, visitType, location);
+	}
+
 	private List<AppointmentBlock> getAppointmentBlockList(Location location,
-			Date date, List<AppointmentType> appointmentTypes) {
+														   Date date, List<AppointmentType> appointmentTypes) {
 		return getAppointmentBlocksByTypes(setDateToStartOfDay(date),
 				setDateToEndOfDay(date), location.getId().toString(), null,
 				appointmentTypes);
@@ -1200,5 +1236,21 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 		boundaries[1] = mean + factor;
 
 		return boundaries;
+	}
+
+	public List<Appointment> uniqueAppointmentsByDate(List<Appointment> appointments) {
+
+		List<Appointment> appointmentList = appointments.stream()
+				.filter(distinctByAppointmentDate( e -> e.getTimeSlot().getStartDate()))
+				.collect(Collectors.toList());
+		log.error(appointmentList.size());
+		 return appointmentList;
+	}
+
+	public static <T> Predicate<T> distinctByAppointmentDate(
+			Function<? super T, ?> ke) {
+
+		Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+		return t -> seen.putIfAbsent(ke.apply(t), Boolean.TRUE) == null;
 	}
 }

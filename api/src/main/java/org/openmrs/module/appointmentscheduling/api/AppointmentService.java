@@ -13,13 +13,11 @@
  */
 package org.openmrs.module.appointmentscheduling.api;
 
-import org.openmrs.Location;
-import org.openmrs.Patient;
-import org.openmrs.Provider;
-import org.openmrs.Visit;
+import org.openmrs.*;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
+import org.openmrs.api.db.DAOException;
 import org.openmrs.module.appointmentscheduling.Appointment;
 import org.openmrs.module.appointmentscheduling.Appointment.AppointmentStatus;
 import org.openmrs.module.appointmentscheduling.AppointmentBlock;
@@ -959,4 +957,20 @@ public interface AppointmentService extends OpenmrsService {
     @Authorized(AppointmentUtils.PRIV_SCHEDULE_APPOINTMENTS)
 	Appointment bookAppointment(Appointment appointment, Boolean allowOverbook)
 			throws TimeSlotFullException;
+
+	@Authorized(AppointmentUtils.PRIV_VIEW_APPOINTMENTS)
+	List<Appointment> getDailyAppointmentReports(Date date, Provider provider, AppointmentType type, AppointmentStatus status,
+                                                 Patient patient, VisitType visitType, Location location) throws APIException;
+
+	@Authorized(AppointmentUtils.PRIV_VIEW_APPOINTMENTS)
+	List<Appointment> getMonthlyAppointmentReports(Date fromDate, Date toDate, Provider provider, AppointmentType type, AppointmentStatus status,
+														  Patient patient, VisitType visitType, Location location) throws APIException;
+
+    @Authorized(AppointmentUtils.PRIV_VIEW_APPOINTMENTS)
+    Integer getAppointmentDailyCount(Appointment appointment) throws APIException;
+
+	List<Appointment> getDefaultersList(int minDays, int maxDays, Provider provider, AppointmentType type, VisitType visitType,
+										Location location) throws APIException;
+
+
 }
