@@ -128,8 +128,7 @@ public class AppointmentListController {
 	        @RequestParam(value = "providerSelect", required = false) Provider provider,
 	        @RequestParam(value = "appointmentTypeSelect", required = false) AppointmentType appointmentType,
 	        @RequestParam(value = "appointmentStatusSelect", required = false) AppointmentStatus status,
-	        @RequestParam(value = "visitTypeSelect", required = false) VisitType visitType,
-	        @RequestParam(value = "visitSelect", required = false) Visit visit) {
+	        @RequestParam(value = "visitTypeSelect", required = false) VisitType visitType) {
 
 		List<Appointment> filteredAppointments = new LinkedList<Appointment>();
 		
@@ -148,7 +147,7 @@ public class AppointmentListController {
 			}
 			try {
 				appointments = Context.getService(AppointmentService.class).getAppointmentsByConstraints(fromDate, toDate,
-				    location, provider, appointmentType, status, visitType, visit);
+				    location, provider, appointmentType, status, visitType);
 			}
 			catch (APIException ex) {
 				return new LinkedList<Appointment>();

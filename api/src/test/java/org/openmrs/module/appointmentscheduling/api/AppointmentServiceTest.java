@@ -212,7 +212,7 @@ public class AppointmentServiceTest extends BaseModuleContextSensitiveTest {
     @Test
     @Verifies(value = "should get appointment corresponding to visit", method = "getAppointmentByVisit(Integer visitId)")
     public void getAppointmentByVisit_shouldGetCorrectAppointment() {
-        Appointment appointment = service.getAppointmentByVisit(new Visit(1));
+        List<Appointment> appointment = service.getAppointmentByVisit(new Visit(1));
         Assert.assertNotNull(appointment);
 
         appointment = service.getAppointmentByVisit(new Visit(13));
@@ -265,14 +265,14 @@ public class AppointmentServiceTest extends BaseModuleContextSensitiveTest {
         Date fromDate = format.parse("2013-01-01 00:00:00.0");
         Date toDate = format.parse("2000-01-01 00:00:00.0");
         service.getAppointmentsByConstraints(fromDate, toDate, null, null,
-                null, null, null, null);
+                null, null, null);
     }
 
     @Test
     @Verifies(value = "Should Get All unvoided Appointments", method = "getAppointmentsByConstraints(Date, Date, Location, Provider, AppointmentType, String)")
     public void shouldGetAllUnvoidedAppointments_getAppointmentsByConstraints() {
         List<Appointment> appointments = service.getAppointmentsByConstraints(
-                null, null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null);
         assertEquals(TOTAL_APPOINTMENTS_EXCLUDING_VOIDED, appointments.size());
     }
 
@@ -284,12 +284,12 @@ public class AppointmentServiceTest extends BaseModuleContextSensitiveTest {
         Date fromDate = format.parse("2006-01-01 00:00:00.0");
 
         List<Appointment> appointments = service.getAppointmentsByConstraints(
-                fromDate, null, null, null, null, null, null, null);
+                fromDate, null, null, null, null, null, null);
         assertEquals(8, appointments.size());
 
         Date toDate = format.parse("2006-01-01 01:00:00.3");
         appointments = service.getAppointmentsByConstraints(null, toDate, null,
-                null, null, null, null, null);
+                null, null, null, null);
         assertEquals(3, appointments.size());
 
         fromDate = format.parse("2007-01-01 00:00:00.0");
@@ -297,88 +297,88 @@ public class AppointmentServiceTest extends BaseModuleContextSensitiveTest {
         Appointment specificAppointment = service.getAppointment(4);
         assertNotNull(specificAppointment);
         appointments = service.getAppointmentsByConstraints(fromDate, toDate,
-                null, null, null, null, null, null);
+                null, null, null, null, null);
         assertEquals(specificAppointment, appointments.iterator().next());
         assertEquals(1, appointments.size());
     }
 
     @Test
-    @Verifies(value = "Should get all unvoided appointments by provider", method = "getAppointmentsByConstraints(Date, Date, Location, Provider, AppointmentType, String, VisitType, Visit)")
+    @Verifies(value = "Should get all unvoided appointments by provider", method = "getAppointmentsByConstraints(Date, Date, Location, Provider, AppointmentType, String, VisitType)")
     public void shouldGetAllUnvoidedAppointmentsByProvider_getAppointmentsByConstraints() {
         Provider provider = Context.getProviderService().getProvider(1);
         assertNotNull(provider);
         List<Appointment> appointments = service.getAppointmentsByConstraints(
-                null, null, null, provider, null, null, null, null);
+                null, null, null, provider, null, null, null);
         assertEquals((Integer) (9), (Integer) appointments.size());
     }
 
     @Test
-    @Verifies(value = "Should get all unvoided appointments by appointment type", method = "getAppointmentsByConstraints(Date, Date, Location, Provider, AppointmentType, String, VisitType, Visit)")
+    @Verifies(value = "Should get all unvoided appointments by appointment type", method = "getAppointmentsByConstraints(Date, Date, Location, Provider, AppointmentType, String, VisitType)")
     public void shouldGetAllUnvoidedAppointmentsByType_getAppointmentsByConstraints() {
         AppointmentType type = service.getAppointmentType(1);
         assertNotNull(type);
         List<Appointment> appointments = service.getAppointmentsByConstraints(
-                null, null, null, null, type, null, null, null);
+                null, null, null, null, type, null, null);
         assertEquals(7, appointments.size());
 
         type = service.getAppointmentType(3);
         Appointment specificAppointment = service.getAppointment(5);
         appointments = service.getAppointmentsByConstraints(null, null, null,
-                null, type, null, null, null);   // apt #5 should be first because we are sorting by time slot
+                null, type, null, null);   // apt #5 should be first because we are sorting by time slot
         assertEquals(specificAppointment, appointments.iterator().next());
         assertEquals(3, appointments.size());
     }
 
     @Test
-    @Verifies(value = "Should get all unvoided appointments by location", method = "getAppointmentsByConstraints(Date, Date, Location, Provider, AppointmentType, AppointmentStatus, VisitType, Visit)")
+    @Verifies(value = "Should get all unvoided appointments by location", method = "getAppointmentsByConstraints(Date, Date, Location, Provider, AppointmentType, AppointmentStatus, VisitType)")
     public void shouldGetAllUnvoidedAppointmentsByLocation_getAppointmentsByConstraints() {
         Location location = Context.getLocationService().getLocation(3);
         assertNotNull(location);
         List<Appointment> appointments = service.getAppointmentsByConstraints(
-                null, null, location, null, null, null, null, null);
+                null, null, location, null, null, null, null);
         assertEquals(6, appointments.size());
 
         location = Context.getLocationService().getLocation(2);
         assertNotNull(location);
         appointments = service.getAppointmentsByConstraints(null, null,
-                location, null, null, null, null, null);
+                location, null, null, null, null);
         assertEquals(10, appointments.size());
 
         location = Context.getLocationService().getLocation(4);
         assertNotNull(location);
         appointments = service.getAppointmentsByConstraints(null, null,
-                location, null, null, null, null, null);
+                location, null, null, null, null);
         assertTrue(appointments.isEmpty());
     }
 
     @Test
-    @Verifies(value = "Should get all unvoided appointments by status", method = "getAppointmentsByConstraints(Date, Date, Location, Provider, AppointmentType, AppointmentStatus, VisitType, Visit)")
+    @Verifies(value = "Should get all unvoided appointments by status", method = "getAppointmentsByConstraints(Date, Date, Location, Provider, AppointmentType, AppointmentStatus, VisitType)")
     public void shouldgetAllUnvoidedAppointmentsByStatus_getAppointmentsByConstraints() {
 
         List<Appointment> appointments = service.getAppointmentsByConstraints(
-                null, null, null, null, null, AppointmentStatus.SCHEDULED, null, null);
+                null, null, null, null, null, AppointmentStatus.SCHEDULED, null);
         assertEquals(3, appointments.size());
 
         appointments = service.getAppointmentsByConstraints(null, null, null,
-                null, null, AppointmentStatus.MISSED, null, null);
+                null, null, AppointmentStatus.MISSED, null);
         assertEquals(2, appointments.size());
     }
 
     @Test
-    @Verifies(value = "Should get all unvoided appointments by patient", method = "getAppointmentsByConstraints(Date, Date, Location, Provider, AppointmentType, AppointmentStatus, Patient, VisitType, Visit)")
+    @Verifies(value = "Should get all unvoided appointments by patient", method = "getAppointmentsByConstraints(Date, Date, Location, Provider, AppointmentType, AppointmentStatus, Patient, VisitType)")
     public void shouldgetAllUnvoidedAppointmentsByPatient_getAppointmentsByConstraints() {
 
         Patient patient = Context.getPatientService().getPatient(2);
 
         List<Appointment> appointments = service.getAppointmentsByConstraints(
-                null, null, null, null, null, patient, new ArrayList<AppointmentStatus>(), null, null);
+                null, null, null, null, null, patient, new ArrayList<AppointmentStatus>(), null);
         assertEquals(2, appointments.size());
         assertEquals(patient, appointments.get(0).getPatient());
         assertEquals(patient, appointments.get(1).getPatient());
     }
 
     @Test
-    @Verifies(value = "Should get all unvoided appointments by patient with Scheduled and Rescheduled statuses", method = "getAppointmentsByConstraints(Date, Date, Location, Provider, AppointmentType, List<AppointmentStatus>, Patient, VisitType, Visit)")
+    @Verifies(value = "Should get all unvoided appointments by patient with Scheduled and Rescheduled statuses", method = "getAppointmentsByConstraints(Date, Date, Location, Provider, AppointmentType, List<AppointmentStatus>, Patient, VisitType)")
     public void shouldgetAllUnvoidedAppointmentsByPatientAndStatus_getAppointmentsByConstraints() {
 
         Patient patient = Context.getPatientService().getPatient(1);
@@ -387,24 +387,12 @@ public class AppointmentServiceTest extends BaseModuleContextSensitiveTest {
                 AppointmentStatus.SCHEDULED, AppointmentStatus.RESCHEDULED);
 
         List<Appointment> appointments = service.getAppointmentsByConstraints(
-                null, null, null, null, null, patient, appointmentStatuses, null, null);
+                null, null, null, null, null, patient, appointmentStatuses, null);
         assertEquals(4, appointments.size());
         assertEquals(patient, appointments.get(0).getPatient());
         assertEquals(patient, appointments.get(1).getPatient());
         assertEquals(patient, appointments.get(2).getPatient());
         assertEquals(patient, appointments.get(3).getPatient());
-    }
-
-    @Test
-    @Verifies(value = "Should get all unvoided appointments by visit", method = "getAppointmentsByConstraints(Date, Date, Location, Provider, AppointmentType, AppointmentStatus, Patient, VisitType, Visit)")
-    public void shouldgetAllUnvoidedAppointmentsByVisit_getAppointmentsByConstraints() {
-
-        Visit visit = Context.getVisitService().getVisit(1);
-
-        List<Appointment> appointments = service.getAppointmentsByConstraints(
-                null, null, null, null, null, null, new ArrayList<AppointmentStatus>(), null, visit);
-        assertEquals(1, appointments.size());
-        assertEquals(visit, appointments.get(0).getVisit());
     }
 
     @Test
@@ -416,7 +404,7 @@ public class AppointmentServiceTest extends BaseModuleContextSensitiveTest {
                 AppointmentStatus.SCHEDULED, AppointmentStatus.RESCHEDULED);
 
         List<Appointment> appointments = service.getAppointmentsByConstraints(
-                null, null, null, null, null, patient, appointmentStatuses, null, null);
+                null, null, null, null, null, patient, appointmentStatuses, null);
 
         assertNotNull(appointments);
         assertEquals(4, appointments.size());

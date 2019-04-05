@@ -376,7 +376,7 @@ public interface AppointmentService extends OpenmrsService {
 	 * @return the appointment that is related to this visit, null if there isnt any.
 	 */
     @Authorized(AppointmentUtils.PRIV_VIEW_APPOINTMENTS)
-	Appointment getAppointmentByVisit(Visit visit);
+	List<Appointment> getAppointmentByVisit(Visit visit);
 
 	// TimeSlot
 
@@ -787,7 +787,7 @@ public interface AppointmentService extends OpenmrsService {
     @Authorized(AppointmentUtils.PRIV_VIEW_APPOINTMENTS)
 	List<Appointment> getAppointmentsByConstraints(Date fromDate, Date toDate,
 												   Location location, Provider provider, AppointmentType type,
-												   AppointmentStatus status, VisitType visitType, Visit visit) throws APIException;
+												   AppointmentStatus status, VisitType visitType) throws APIException;
 
 	/**
 	 * Retrieves Appointments that satisfy the given constraints
@@ -805,7 +805,7 @@ public interface AppointmentService extends OpenmrsService {
     @Authorized(AppointmentUtils.PRIV_VIEW_APPOINTMENTS)
 	List<Appointment> getAppointmentsByConstraints(Date fromDate, Date toDate,
 			Location location, Provider provider, AppointmentType type,
-			Patient patient, AppointmentStatus status, VisitType visitType, Visit visit) throws APIException;
+			Patient patient, AppointmentStatus status, VisitType visitType) throws APIException;
 
 	/**
 	 * Retrieves Appointments that satisfy the given constraints
@@ -824,7 +824,7 @@ public interface AppointmentService extends OpenmrsService {
 	List<Appointment> getAppointmentsByConstraints(Date fromDate, Date toDate,
 			Location location, Provider provider, AppointmentType type,
 			Patient patient, List<AppointmentStatus> appointmentStatuses,
-		   VisitType visitType, Visit visit);
+		   VisitType visitType);
 
 	/**
 	 * Retrives the start date of the current status of a given appointment.

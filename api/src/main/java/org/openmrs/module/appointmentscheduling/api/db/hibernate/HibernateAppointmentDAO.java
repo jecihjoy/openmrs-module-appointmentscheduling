@@ -60,13 +60,13 @@ public class HibernateAppointmentDAO extends HibernateSingleClassDAO
 
     @Override
     @Transactional(readOnly = true)
-    public Appointment getAppointmentByVisit(Visit visit) {
-        return (Appointment) super.sessionFactory
+    public List<Appointment> getAppointmentByVisit(Visit visit) {
+        return  super.sessionFactory
                 .getCurrentSession()
                 .createQuery(
                         "from " + mappedClass.getSimpleName()
                                 + " at where at.visit = :visit")
-                .setParameter("visit", visit).uniqueResult();
+                .setParameter("visit", visit).list();
     }
 
     @Override
@@ -91,7 +91,7 @@ public class HibernateAppointmentDAO extends HibernateSingleClassDAO
     @Transactional(readOnly = true)
     public List<Appointment> getAppointmentsByConstraints(Date fromDate,
                                                           Date toDate, Provider provider, AppointmentType appointmentType,
-                                                          List<AppointmentStatus> statuses, Patient patient, VisitType visitType, Visit visit)
+                                                          List<AppointmentStatus> statuses, Patient patient, VisitType visitType)
             throws APIException {
         if (fromDate != null && toDate != null && !fromDate.before(toDate))
             throw new APIException("fromDate can not be later than toDate");
@@ -111,8 +111,6 @@ public class HibernateAppointmentDAO extends HibernateSingleClassDAO
                 stringQuery += " AND appointment.appointmentType=:appointmentType";
             if (visitType != null)
                 stringQuery += " AND appointment.appointmentType.visitType = :visitType";
-            if (visit != null)
-                stringQuery += " AND appointment.visit = :visit";
             if (patient != null) {
                 stringQuery += " AND appointment.patient = :patient";
             }
@@ -134,8 +132,6 @@ public class HibernateAppointmentDAO extends HibernateSingleClassDAO
                 query.setParameter("appointmentType", appointmentType);
             if (visitType != null)
                 query.setParameter("visitType", visitType);
-            if (visit != null)
-                query.setParameter("visit", visit);
             if (patient != null)
                 query.setParameter("patient", patient);
 
@@ -148,9 +144,9 @@ public class HibernateAppointmentDAO extends HibernateSingleClassDAO
     @Transactional(readOnly = true)
     public List<Appointment> getAppointmentsByConstraints(Date fromDate,
                                                           Date toDate, Provider provider, AppointmentType appointmentType,
-                                                          AppointmentStatus status, Patient patient, VisitType visitType, Visit visit) throws APIException {
+                                                          AppointmentStatus status, Patient patient, VisitType visitType) throws APIException {
         return getAppointmentsByConstraints(fromDate, toDate, provider,
-                appointmentType, Arrays.asList(status), patient, visitType, visit);
+                appointmentType, Arrays.asList(status), patient, visitType);
     }
 
     @Override

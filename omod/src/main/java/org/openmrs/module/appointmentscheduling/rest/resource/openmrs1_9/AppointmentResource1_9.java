@@ -191,9 +191,12 @@ public class AppointmentResource1_9 extends DataDelegatingCrudResource<Appointme
 				context.getParameter("visit")) : null;
 		
 		List<AppointmentStatus> statuses = getAppointmentsStatuses(context);
-		
+
+		if(visit != null && fromDate == null && toDate == null && location == null &&  provider == null && appointmentType == null && patient == null && statuses == null && visitType == null){
+			return new NeedsPaging<Appointment>(Context.getService(AppointmentService.class).getAppointmentByVisit(visit), context);
+		}
 		return new NeedsPaging<Appointment>(Context.getService(AppointmentService.class).getAppointmentsByConstraints(
-		    fromDate, toDate, location, provider, appointmentType, patient, statuses, visitType, visit), context);
+		    fromDate, toDate, location, provider, appointmentType, patient, statuses, visitType), context);
 		
 	}
 	
