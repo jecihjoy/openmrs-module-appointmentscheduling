@@ -14,17 +14,14 @@
 package org.openmrs.module.appointmentscheduling;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.openmrs.BaseOpenmrsData;
-import org.openmrs.BaseOpenmrsMetadata;
-import org.openmrs.BaseOpenmrsObject;
-import org.openmrs.Patient;
-import org.openmrs.Visit;
+import org.openmrs.*;
 import org.openmrs.module.appointmentscheduling.serialize.AppointmentStatusSerializer;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -124,6 +121,12 @@ public class Appointment extends BaseOpenmrsData implements Serializable {
 
 	private AppointmentType appointmentType;
 
+	private Date date;
+
+	private Location location;
+
+	private Provider provider;
+
 	public Appointment() {
 
 	}
@@ -139,6 +142,19 @@ public class Appointment extends BaseOpenmrsData implements Serializable {
 		setPatient(patient);
 		setStatus(status);
 		setAppointmentType(appointmentType);
+	}
+
+	public Appointment(TimeSlot timeSlot, Visit visit, Patient patient,
+					   AppointmentType appointmentType, AppointmentStatus status,
+					   Date date, Location location, Provider provider) {
+		setTimeSlot(timeSlot);
+		setVisit(visit);
+		setPatient(patient);
+		setStatus(status);
+		setAppointmentType(appointmentType);
+		setLocation(location);
+		setDate(date);
+		setProvider(provider);
 	}
 
 	public Integer getAppointmentId() {
@@ -221,4 +237,27 @@ public class Appointment extends BaseOpenmrsData implements Serializable {
 		this.appointmentType = appointmentType;
 	}
 
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
+
+	public Location getLocation() {
+		return location;
+	}
+
+	public void setLocation(Location location) {
+		this.location = location;
+	}
+
+	public Provider getProvider() {
+		return provider;
+	}
+
+	public void setProvider(Provider provider) {
+		this.provider = provider;
+	}
 }
