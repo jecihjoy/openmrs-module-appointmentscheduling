@@ -24,6 +24,7 @@ import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.appointmentscheduling.Appointment;
 import org.openmrs.module.appointmentscheduling.Appointment.AppointmentStatus;
 import org.openmrs.module.appointmentscheduling.AppointmentBlock;
+import org.openmrs.module.appointmentscheduling.AppointmentDailyCount;
 import org.openmrs.module.appointmentscheduling.AppointmentRequest;
 import org.openmrs.module.appointmentscheduling.AppointmentStatusHistory;
 import org.openmrs.module.appointmentscheduling.AppointmentType;
@@ -980,4 +981,40 @@ public interface AppointmentService extends OpenmrsService {
     @Authorized(AppointmentUtils.PRIV_SCHEDULE_APPOINTMENTS)
 	Appointment bookAppointment(Appointment appointment, Boolean allowOverbook)
 			throws TimeSlotFullException;
+
+	/**
+	 * returns daily count for the statuses
+	 * scheduled
+	 * missed
+	 * completed
+	 */
+	@Authorized(AppointmentUtils.PRIV_VIEW_APPOINTMENTS)
+    List<AppointmentDailyCount> getAppointmentsDailyCount(Date fromDate,
+														  Date toDate, Location location, Provider provider, AppointmentType appointmentType,
+														  AppointmentStatus status, VisitType visitType);
+	/**
+	 * returns list of early appointment visits
+	 * who came late/early for their visits
+	 */
+	@Authorized(AppointmentUtils.PRIV_VIEW_APPOINTMENTS)
+	List<Appointment> getEarlyVisits(Date fromDate,
+								  Date toDate,  Location location, Provider provider, AppointmentType appointmentType,
+								  AppointmentStatus status, VisitType visitType) throws APIException;
+
+	/**
+	 * returns list of late appointments visits
+	 * who came late/early for their visits
+	 */
+	@Authorized(AppointmentUtils.PRIV_VIEW_APPOINTMENTS)
+	List<Appointment> getLateVisits(Date fromDate,
+											Date toDate,  Location location, Provider provider, AppointmentType appointmentType,
+											AppointmentStatus status, VisitType visitType) throws APIException;
+
+	/**
+	 * returns list of patient who have not come for the visits using
+	 * minDays and maxDays range provided
+	 */
+    @Authorized(AppointmentUtils.PRIV_VIEW_APPOINTMENTS)
+    List<Appointment> getDefaultersList(int minDays, int maxDays, Provider provider, AppointmentType type, VisitType visitType,
+                                        Location location) throws APIException;
 }

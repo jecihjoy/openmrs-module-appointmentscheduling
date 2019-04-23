@@ -29,6 +29,7 @@ import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.appointmentscheduling.Appointment;
 import org.openmrs.module.appointmentscheduling.Appointment.AppointmentStatus;
 import org.openmrs.module.appointmentscheduling.AppointmentBlock;
+import org.openmrs.module.appointmentscheduling.AppointmentDailyCount;
 import org.openmrs.module.appointmentscheduling.AppointmentRequest;
 import org.openmrs.module.appointmentscheduling.AppointmentStatusHistory;
 import org.openmrs.module.appointmentscheduling.AppointmentType;
@@ -45,6 +46,8 @@ import org.openmrs.module.appointmentscheduling.exception.TimeSlotFullException;
 import org.openmrs.validator.ValidateUtil;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -56,6 +59,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -1155,8 +1159,87 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 				appointment);
 	}
 
+	@Override
+	public List<AppointmentDailyCount> getAppointmentsDailyCount(Date fromDate, Date toDate, Location location, Provider provider,
+																 AppointmentType appointmentType, AppointmentStatus status, VisitType visitType) {
+		List<Appointment> appointments = getAppointmentsByConstraints(fromDate,
+				toDate, location, provider, appointmentType, null, Collections.singletonList(status),
+				visitType, null);
+		try {
+			return getAppointmentsDailyReport(appointments);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public List<Appointment> getEarlyVisits(Date fromDate,
+											Date toDate, Location location, Provider provider, AppointmentType appointmentType,
+											AppointmentStatus status, VisitType visitType) throws APIException {
+		List<Appointment> allCompletedAppnts = getAppointmentsByConstraints(fromDate,
+				toDate, location, provider, appointmentType, null, AppointmentStatus.COMPLETED);
+
+		List<Appointment> earlyAppnts = new ArrayList<Appointment>();
+		for (Appointment ap : allCompletedAppnts) {
+			if (ap.getVisit().getStartDatetime().before(ap.getTimeSlot().getEndDate())) {
+				earlyAppnts.add(ap);
+			}
+		}
+		return earlyAppnts;
+	}
+
+	@Override
+	public List<Appointment> getLateVisits(Date fromDate,
+										   Date toDate, Location location, Provider provider, AppointmentType appointmentType,
+										   AppointmentStatus status, VisitType visitType) throws APIException {
+		List<Appointment> allCompletedAppnts = getAppointmentsByConstraints(fromDate,
+				toDate, location, provider, appointmentType, null, AppointmentStatus.COMPLETED);
+
+		List<Appointment> lateAppnts = new ArrayList<Appointment>();
+		for (Appointment ap : allCompletedAppnts) {
+			if (ap.getVisit().getStartDatetime().after(ap.getTimeSlot().getEndDate())) {
+				lateAppnts.add(ap);
+			}
+		}
+
+		return lateAppnts;
+	}
+
+	@Override
+	public List<Appointment> getDefaultersList(int minDays, int maxDays, Provider provider, AppointmentType type,
+											   VisitType visitType, Location location) throws APIException {
+		List<Appointment> appointments = getAppointmentDAO().getDefaultersList(minDays, maxDays, provider, type, visitType);
+
+		List<Appointment> defaultedAppointmentsInLocation = new LinkedList<Appointment>();
+
+		// Used to update the session to the correct one
+		if (location != null)
+			location = Context.getLocationService().getLocation(
+					location.getId());
+
+		Set<Location> relevantLocations = getAllLocationDescendants(location,
+				null);
+		relevantLocations.add(location);
+
+		for (Appointment appointment : appointments) {
+
+			// Filter by location
+			if (location != null) {
+				if (relevantLocations.contains(appointment.getTimeSlot()
+						.getAppointmentBlock().getLocation()))
+					defaultedAppointmentsInLocation.add(appointment);
+			} else
+				defaultedAppointmentsInLocation.add(appointment);
+
+		}
+
+		return defaultedAppointmentsInLocation;
+
+	}
+
 	private List<AppointmentBlock> getAppointmentBlockList(Location location,
-			Date date, List<AppointmentType> appointmentTypes) {
+														   Date date, List<AppointmentType> appointmentTypes) {
 		return getAppointmentBlocksByTypes(setDateToStartOfDay(date),
 				setDateToEndOfDay(date), location.getId().toString(), null,
 				appointmentTypes);
@@ -1218,4 +1301,41 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 
 		return boundaries;
 	}
+
+	public List<AppointmentDailyCount> getAppointmentsDailyReport(List<Appointment> appointments) throws ParseException {
+		List<AppointmentDailyCount> appointmentDailyCountList = new ArrayList<AppointmentDailyCount>();
+		ListIterator<Appointment> iterator = appointments.listIterator();
+		ArrayList<Date> dates = new ArrayList<Date>();
+		while (iterator.hasNext()) {
+			dates.add(new SimpleDateFormat("yyyy-MM-dd").parse(new SimpleDateFormat("yyyy-MM-dd").format(iterator.next().getTimeSlot().getStartDate())));//2019-05-07
+		}
+		List<Date> sortdeDates = removeDuplicates(dates);
+		log.info("SORTED DAILY DATES	 " + sortdeDates.size());
+
+		for (Date date : sortdeDates) {
+			List<Appointment> dailyList = new ArrayList<Appointment>();
+			for (Appointment app : appointments) {
+				int status = (new SimpleDateFormat("yyyy-MM-dd").parse(new SimpleDateFormat("yyyy-MM-dd").format(app.getTimeSlot().getStartDate())).compareTo(date));
+				if (status == 0) {
+					dailyList.add(app);
+				}
+
+			}
+			AppointmentDailyCount appointmentDailyCount = new AppointmentDailyCount(date, dailyList.size(), dailyList);
+			appointmentDailyCountList.add(appointmentDailyCount);
+		}
+		return appointmentDailyCountList;
+	}
+
+
+	public static <T> ArrayList<T> removeDuplicates(ArrayList<T> list) {
+		ArrayList<T> newList = new ArrayList<T>();
+		for (T element : list) {
+			if (!newList.contains(element)) {
+				newList.add(element);
+			}
+		}
+		return newList;
+	}
+
 }

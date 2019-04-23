@@ -42,6 +42,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
+import static org.openmrs.module.appointmentscheduling.Appointment.AppointmentStatus.EARLY;
 
 /**
  * Tests Appointment methods in the {@link$ AppointmentService} .
@@ -634,6 +635,34 @@ public class AppointmentServiceTest extends BaseModuleContextSensitiveTest {
 		assertEquals(appointmentType, appointment.getAppointmentType());
 		assertEquals(AppointmentStatus.SCHEDULED, appointment.getStatus());
 		assertNull(appointment.getVisit());
+
+	}
+
+	@Test
+	@Verifies(value = "should get all Early Visits", method = "getEarlyVisits(Date fromDate,Date toDate, Location location, Provider provider," +
+			" AppointmentType appointmentType, AppointmentStatus status, VisitType visitType")
+	public void getEarlyVisits_shouldGetEarlyVisits()
+			throws Exception {
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		Date fromDate = format.parse("2005-01-01");
+		Date toDate = format.parse("2006-02-02");
+		List<Appointment> appointments = service
+				.getEarlyVisits(fromDate, toDate, null, null, null, EARLY, null);
+		assertEquals(0, appointments.size());
+
+	}
+
+	@Test
+	@Verifies(value = "should get all Late Visits", method = "getLateVisits(Date fromDate,Date toDate, Location location, Provider provider," +
+			" AppointmentType appointmentType, AppointmentStatus status, VisitType visitType")
+	public void getLateVisits_shouldGetLateVisits()
+			throws Exception {
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		Date fromDate = format.parse("2005-01-01");
+		Date toDate = format.parse("2006-02-02");
+		List<Appointment> appointments = service
+				.getLateVisits(fromDate, toDate, null, null, null, EARLY, null);
+		assertEquals(0, appointments.size());
 
 	}
 }
