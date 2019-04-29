@@ -980,4 +980,7 @@ public interface AppointmentService extends OpenmrsService {
     @Authorized(AppointmentUtils.PRIV_SCHEDULE_APPOINTMENTS)
 	Appointment bookAppointment(Appointment appointment, Boolean allowOverbook)
 			throws TimeSlotFullException;
+
+	@Authorized(AppointmentUtils.PRIV_VIEW_APPOINTMENTS)
+	AppointmentStatusHistory getPreviousAppointmentStatus(Appointment appointment);
 }

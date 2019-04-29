@@ -16,6 +16,7 @@ package org.openmrs.module.appointmentscheduling.api.db;
 import java.util.Date;
 import java.util.List;
 
+import org.openmrs.api.db.DAOException;
 import org.openmrs.module.appointmentscheduling.Appointment;
 import org.openmrs.module.appointmentscheduling.AppointmentStatusHistory;
 import org.openmrs.module.appointmentscheduling.Appointment.AppointmentStatus;
@@ -58,4 +59,10 @@ public interface AppointmentStatusHistoryDAO extends SingleClassDAO {
 	 * @return
 	 */
 	public void purgeHistoryBy(Appointment appointment);
+
+	/**
+	 * Returns previous status of a given appointment
+	 */
+	@Transactional(readOnly = true)
+	AppointmentStatusHistory getPreviousAppointmentStatus(Appointment appointment);
 }

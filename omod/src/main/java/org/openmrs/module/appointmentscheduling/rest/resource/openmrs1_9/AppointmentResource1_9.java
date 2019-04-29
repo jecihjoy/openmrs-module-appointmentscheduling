@@ -1,5 +1,6 @@
 package org.openmrs.module.appointmentscheduling.rest.resource.openmrs1_9;
 
+import org.joda.time.DateTime;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.Provider;
@@ -7,6 +8,7 @@ import org.openmrs.Visit;
 import org.openmrs.VisitType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.appointmentscheduling.Appointment;
+import org.openmrs.module.appointmentscheduling.AppointmentStatusHistory;
 import org.openmrs.module.appointmentscheduling.AppointmentType;
 import org.openmrs.module.appointmentscheduling.api.AppointmentService;
 import org.openmrs.module.appointmentscheduling.exception.TimeSlotFullException;
@@ -127,7 +129,22 @@ public class AppointmentResource1_9 extends DataDelegatingCrudResource<Appointme
 	protected Appointment save(Appointment appointment, Boolean allowOverbook) {
 		if (appointment.getId() != null) {
 			// existing appointments get updated
-			return Context.getService(AppointmentService.class).saveAppointment(appointment);
+			AppointmentService appointmentService = Context.getService(AppointmentService.class);
+			appointmentService.saveAppointment(appointment);
+
+			AppointmentStatusHistory previousStatus = appointmentService.getPreviousAppointmentStatus(appointment);
+			previousStatus.setEndDate(new Date());
+			appointmentService.saveAppointmentStatusHistory(previousStatus);
+
+			AppointmentStatusHistory currentStatus = new AppointmentStatusHistory();
+			currentStatus.setAppointment(appointment);
+			currentStatus.setStartDate(appointmentService.getAppointmentCurrentStatusStartDate(appointment));
+			currentStatus.setEndDate(new DateTime().plusDays(1).toDate());
+			currentStatus.setStatus(appointment.getStatus());
+
+			appointmentService.saveAppointmentStatusHistory(currentStatus);
+
+			return appointment;
 		} else {
 			// new appointments get booked
 			try {

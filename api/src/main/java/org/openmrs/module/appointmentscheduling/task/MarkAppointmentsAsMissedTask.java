@@ -3,6 +3,7 @@ package org.openmrs.module.appointmentscheduling.task;
 import org.joda.time.DateTime;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.appointmentscheduling.Appointment;
+import org.openmrs.module.appointmentscheduling.AppointmentStatusHistory;
 import org.openmrs.module.appointmentscheduling.api.AppointmentService;
 import org.openmrs.scheduler.tasks.AbstractTask;
 
@@ -22,6 +23,18 @@ public class MarkAppointmentsAsMissedTask extends AbstractTask {
                 Appointment.AppointmentStatus.getAppointmentsStatusByTypes(Arrays.asList(Appointment.AppointmentStatusType.SCHEDULED)))) {
             appointment.setStatus(Appointment.AppointmentStatus.MISSED);
             appointmentService.saveAppointment(appointment);
+
+            AppointmentStatusHistory previousStatus = appointmentService.getPreviousAppointmentStatus(appointment);
+            previousStatus.setEndDate(new Date());
+            appointmentService.saveAppointmentStatusHistory(previousStatus);
+
+            AppointmentStatusHistory currentStatus = new AppointmentStatusHistory();
+            currentStatus.setAppointment(appointment);
+            currentStatus.setStartDate(appointmentService.getAppointmentCurrentStatusStartDate(appointment));
+            currentStatus.setEndDate(new DateTime().plusDays(10).toDate());
+            currentStatus.setStatus(appointment.getStatus());
+
+            appointmentService.saveAppointmentStatusHistory(currentStatus);
         }
     }
 }

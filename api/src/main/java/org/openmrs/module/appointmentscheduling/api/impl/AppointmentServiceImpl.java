@@ -547,6 +547,11 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 	public AppointmentStatusHistory saveAppointmentStatusHistory(
 			AppointmentStatusHistory appointmentStatusHistory)
 			throws APIException {
+		// cannot persist record that already exists
+		if (appointmentStatusHistory.getId() != null) {
+			throw new APIException(
+					"Cannot save record that has already been persisted");
+		}
 		ValidateUtil.validate(appointmentStatusHistory);
 		return (AppointmentStatusHistory) getAppointmentStatusHistoryDAO()
 				.saveOrUpdate(appointmentStatusHistory);
@@ -1151,12 +1156,26 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 		}
 
 		appointment.setStatus(AppointmentStatus.SCHEDULED);
-		return Context.getService(AppointmentService.class).saveAppointment(
-				appointment);
+
+		Appointment savedAppnt = Context.getService(AppointmentService.class).saveAppointment(appointment);
+
+		AppointmentStatusHistory history = new AppointmentStatusHistory();
+		history.setAppointment(appointment);
+		history.setEndDate(new Date());
+		history.setStartDate(new Date());
+		history.setStatus(appointment.getStatus());
+
+		saveAppointmentStatusHistory(history);
+		return savedAppnt;
+	}
+
+	@Override
+	public AppointmentStatusHistory getPreviousAppointmentStatus(Appointment appointment) {
+		return appointmentStatusHistoryDAO.getPreviousAppointmentStatus(appointment);
 	}
 
 	private List<AppointmentBlock> getAppointmentBlockList(Location location,
-			Date date, List<AppointmentType> appointmentTypes) {
+														   Date date, List<AppointmentType> appointmentTypes) {
 		return getAppointmentBlocksByTypes(setDateToStartOfDay(date),
 				setDateToEndOfDay(date), location.getId().toString(), null,
 				appointmentTypes);

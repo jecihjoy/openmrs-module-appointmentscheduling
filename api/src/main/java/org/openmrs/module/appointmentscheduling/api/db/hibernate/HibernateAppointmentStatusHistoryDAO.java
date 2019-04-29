@@ -16,10 +16,13 @@ package org.openmrs.module.appointmentscheduling.api.db.hibernate;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.openmrs.api.db.DAOException;
 import org.openmrs.module.appointmentscheduling.Appointment;
 import org.openmrs.module.appointmentscheduling.Appointment.AppointmentStatus;
 import org.openmrs.module.appointmentscheduling.AppointmentStatusHistory;
@@ -27,7 +30,9 @@ import org.openmrs.module.appointmentscheduling.api.db.AppointmentStatusHistoryD
 import org.springframework.transaction.annotation.Transactional;
 
 public class HibernateAppointmentStatusHistoryDAO extends HibernateSingleClassDAO implements AppointmentStatusHistoryDAO {
-	
+
+	protected final Log log = LogFactory.getLog(this.getClass());
+
 	public HibernateAppointmentStatusHistoryDAO() {
 		super(AppointmentStatusHistory.class);
 	}
@@ -75,5 +80,15 @@ public class HibernateAppointmentStatusHistoryDAO extends HibernateSingleClassDA
 		String hql = "delete from AppointmentStatusHistory where appointment= :appointment";
 		Query query = super.sessionFactory.getCurrentSession().createQuery(hql);
 		query.setParameter("appointment", appointment).executeUpdate();
+	}
+
+	@Override
+	public AppointmentStatusHistory getPreviousAppointmentStatus(Appointment appointment){
+
+		String query = "Select history from AppointmentStatusHistory AS history  " +
+				"WHERE history.endDate IN (select max(statusHistory.endDate) from AppointmentStatusHistory AS statusHistory " +
+				"WHERE statusHistory.appointment=:appointment)";
+		return (AppointmentStatusHistory) super.sessionFactory.getCurrentSession().createQuery(query)
+				.setParameter("appointment", appointment).uniqueResult();
 	}
 }
