@@ -29,10 +29,11 @@ import org.openmrs.module.appointmentscheduling.AppointmentResource;
 import org.openmrs.module.appointmentscheduling.AppointmentStatusHistory;
 import org.openmrs.module.appointmentscheduling.AppointmentType;
 import org.openmrs.module.appointmentscheduling.AppointmentUtils;
-import org.openmrs.module.appointmentscheduling.BlockExcludedDays;
+import org.openmrs.module.appointmentscheduling.ResourceWeeklyAvailability;
 import org.openmrs.module.appointmentscheduling.TimeSlot;
 import org.openmrs.module.appointmentscheduling.exception.TimeSlotFullException;
 
+import java.sql.Time;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -1071,5 +1072,24 @@ public interface AppointmentService extends OpenmrsService {
 	List<AppointmentResource> getAppointmentResourcesByConstraints(Location locations, Provider provider, List<AppointmentType> appointmentTypes);
 
 	@Authorized
-	BlockExcludedDays geyExcludedDayByUuid(String uuid) throws APIException;
+	ResourceWeeklyAvailability getResourceWeeklyAvailability(String uuid) throws APIException;
+
+	@Authorized
+	ResourceWeeklyAvailability getResourceWeeklyAvailability(Integer id);
+
+	@Authorized
+	ResourceWeeklyAvailability saveResourceWeeklyAvailability(ResourceWeeklyAvailability availability) throws APIException;
+
+	@Authorized
+	List<ResourceWeeklyAvailability> getAllResourcesAvalabilities();
+
+	@Authorized
+	List<ResourceWeeklyAvailability> getAllResourcesAvalabilities(boolean includeVoided);
+
+	@Authorized
+	ResourceWeeklyAvailability voidResourceAvailability(ResourceWeeklyAvailability availability, String reason);
+
+	@Authorized
+	List<ResourceWeeklyAvailability> getResourceAvailbalityByContraints(Date date, Provider provider, Time time, Location location);
+
 }

@@ -31,14 +31,14 @@ public class AppointmentResource extends BaseOpenmrsData {
 
     private Set<AppointmentType> types;
 
-    private List<BlockExcludedDays> daysList;
+//    private List<ResourceWeeklyAvailability> daysList;
 
     private boolean includeWeekends;
 
     public AppointmentResource() {
     }
 
-    public AppointmentResource(Integer appointmentResource, Date startDate, Date endDate, Time startTime, Time endTime, Provider provider, Location location, Set<AppointmentType> types, List<BlockExcludedDays> daysList, boolean includeWeekends) {
+    public AppointmentResource(Integer appointmentResource, Date startDate, Date endDate, Time startTime, Time endTime, Provider provider, Location location, Set<AppointmentType> types, boolean includeWeekends) {
         setAppointmentResource(appointmentResource);
         setStartDate(startDate);
         setEndDate(endDate);
@@ -47,7 +47,6 @@ public class AppointmentResource extends BaseOpenmrsData {
         setProvider(provider);
         setLocation(location);
         setTypes(types);
-        setDaysList(daysList);
         setIncludeWeekends(includeWeekends);
     }
 
@@ -133,19 +132,19 @@ public class AppointmentResource extends BaseOpenmrsData {
         this.includeWeekends = includeWeekends;
     }
 
-    public List<BlockExcludedDays> getDaysList() {
+   /* public List<ResourceWeeklyAvailability> getDaysList() {
         if (this.daysList == null) {
             this.daysList = new ArrayList<>();
         }
         return daysList;
     }
 
-    public void setDaysList(List<BlockExcludedDays> daysList) {
+    public void setDaysList(List<ResourceWeeklyAvailability> daysList) {
         this.daysList = daysList;
     }
 
 
-    public void addExcludedDays(BlockExcludedDays excludedDays, Integer position) {
+    public void addExcludedDays(ResourceWeeklyAvailability excludedDays, Integer position) {
         Integer listIndex = findListIndexForGivenPosition(position);
         excludedDays.setAppointmentResource(this);
         this.getDaysList().add(listIndex, excludedDays);
@@ -165,15 +164,15 @@ public class AppointmentResource extends BaseOpenmrsData {
         return position;
     }
 
-    public void removeExcludedDays(BlockExcludedDays excludedDays) {
+    public void removeExcludedDays(ResourceWeeklyAvailability excludedDays) {
         if (getDaysList().contains(excludedDays)) {
             getDaysList().remove(excludedDays);
             excludedDays.setAppointmentResource(null);
         }
     }
 
-    public void addExcludedDays(BlockExcludedDays excludedDays) {
+    public void addExcludedDays(ResourceWeeklyAvailability excludedDays) {
         this.addExcludedDays(excludedDays, null);
-    }
+    }*/
 
 }

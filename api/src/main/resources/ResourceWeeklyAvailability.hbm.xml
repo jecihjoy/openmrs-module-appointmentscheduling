@@ -5,18 +5,25 @@
 
 <hibernate-mapping package="org.openmrs.module.appointmentscheduling">
 
-    <class name="BlockExcludedDays" table="${project.parent.artifactId}_block_excluded_days">
-        <id name="excludedDateId" type="int" column="excluded_date_id" unsaved-value="0">
+    <class name="ResourceWeeklyAvailability" table="${project.parent.artifactId}_resource_weekly_availability">
+        <id name="resourceWeeklyAvailabilityId" type="int" column="resource_weekly_availability_id" unsaved-value="0">
             <generator class="native">
-                <param name="sequence">excluded_date_excluded_date_id_seq</param>
+                <param name="sequence">resource_weekly_availability_id_seq</param>
             </generator>
         </id>
 
-        <discriminator column="excluded_date_id" insert="false"/>
-        <many-to-one name="appointmentResource" class="AppointmentResource" insert="false" update="false">
+        <discriminator column="resource_weekly_availability_id" insert="false"/>
+<!--        <many-to-one name="appointmentResource" class="AppointmentResource" insert="false" update="false">
             <column name="appointment_resource_id"/>
-        </many-to-one>
-        <property name="excludedDate" type="java.util.Date" column="excluded_date" not-null="true" length="19"/>
+        </many-to-one>-->
+        <many-to-one name="appointmentResource" column="appointment_resource_id" class="AppointmentResource" not-null="true"/>
+        <property name="monday" type="java.lang.String" column="monday" not-null="false" length="19"/>
+        <property name="tuesday" type="java.lang.String" column="tuesday" not-null="false" length="19"/>
+        <property name="wednesday" type="java.lang.String" column="wednesday" not-null="false" length="19"/>
+        <property name="thursday" type="java.lang.String" column="thursday" not-null="false" length="19"/>
+        <property name="friday" type="java.lang.String" column="friday" not-null="false" length="19"/>
+        <property name="saturday" type="java.lang.String" column="saturday" not-null="false" length="19"/>
+        <property name="sunday" type="java.lang.String" column="sunday" not-null="false" length="19"/>
 
         <!-- bi-directional many-to-one association to User -->
         <many-to-one name="creator" class="org.openmrs.User" not-null="true">

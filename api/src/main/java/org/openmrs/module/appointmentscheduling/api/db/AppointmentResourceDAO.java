@@ -3,7 +3,7 @@ package org.openmrs.module.appointmentscheduling.api.db;
 import org.openmrs.Location;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.appointmentscheduling.AppointmentResource;
-import org.openmrs.module.appointmentscheduling.BlockExcludedDays;
+import org.openmrs.module.appointmentscheduling.ResourceWeeklyAvailability;
 
 import java.sql.Time;
 import java.util.Date;
@@ -15,6 +15,8 @@ public interface AppointmentResourceDAO extends SingleClassDAO {
 
     List<String> getResourceExcludedDays(Date appointmentDate, Location location) throws DAOException;
 
-    BlockExcludedDays geyExcludedDayByUuid(String uuid) throws  DAOException;
+    ResourceWeeklyAvailability getResourceWeeklyAvailability(String uuid) throws  DAOException;
+
+    ResourceWeeklyAvailability saveResourceWeeklyAvailability(ResourceWeeklyAvailability availability);
 
 }

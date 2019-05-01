@@ -24,11 +24,11 @@
             <many-to-many class="AppointmentType" column="appointment_type_id"/>
         </set>
 
-        <list name="daysList" lazy="true" cascade="save-update" inverse="false">
+<!--        <list name="daysList" lazy="true" cascade="save-update" inverse="false">
             <key column="appointment_resource_id" not-null="true"/>
             <list-index column="sequence_number"/>
-            <one-to-many class="BlockExcludedDays"/>
-        </list>
+            <one-to-many class="ResourceWeeklyAvailability"/>
+        </list>-->
 
 
         <property name="includeWeekends" type="boolean" column="include_weekends" length="1" not-null="true"/>

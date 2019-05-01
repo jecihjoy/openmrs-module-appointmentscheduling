@@ -34,7 +34,7 @@ import org.openmrs.module.appointmentscheduling.AppointmentRequest;
 import org.openmrs.module.appointmentscheduling.AppointmentResource;
 import org.openmrs.module.appointmentscheduling.AppointmentStatusHistory;
 import org.openmrs.module.appointmentscheduling.AppointmentType;
-import org.openmrs.module.appointmentscheduling.BlockExcludedDays;
+import org.openmrs.module.appointmentscheduling.ResourceWeeklyAvailability;
 import org.openmrs.module.appointmentscheduling.StudentT;
 import org.openmrs.module.appointmentscheduling.TimeSlot;
 import org.openmrs.module.appointmentscheduling.api.AppointmentService;
@@ -84,6 +84,8 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
     private AppointmentRequestDAO appointmentRequestDAO;
 
 	private AppointmentResourceDAO appointmentResourceDAO;
+
+	private ResourceWeeklyAvailabilityDAO  resourceWeeklyAvailabilityDAO;
 	/**
 	 * Getters and Setters
 	 */
@@ -144,7 +146,16 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 	public void setAppointmentResourceDAO(AppointmentResourceDAO appointmentResourceDAO) {
 		this.appointmentResourceDAO = appointmentResourceDAO;
 	}
-    /**
+
+	public ResourceWeeklyAvailabilityDAO getResourceWeeklyAvailabilityDAO() {
+		return resourceWeeklyAvailabilityDAO;
+	}
+
+	public void setResourceWeeklyAvailabilityDAO(ResourceWeeklyAvailabilityDAO resourceWeeklyAvailabilityDAO) {
+		this.resourceWeeklyAvailabilityDAO = resourceWeeklyAvailabilityDAO;
+	}
+
+	/**
 	 * @see org.openmrs.module.appointmentscheduling.api.AppointmentService#getAllAppointmentTypes()
 	 */
 	@Override
@@ -1232,7 +1243,7 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 	public AppointmentResource saveAppointmentResource(AppointmentResource appointmentResource) throws APIException {
 		appointmentResource.setIncludeWeekends(true);
 		ValidateUtil.validate(appointmentResource);
-		return saveAppointResourceInternal(appointmentResource);
+		return (AppointmentResource) getAppointmentResourceDAO().saveOrUpdate(appointmentResource);
 	}
 
 	@Override
@@ -1252,28 +1263,47 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 		return getAppointmentResourceDAO().getResourceByConstraints(null, null, null, null, location, null);
 	}
 
+	// APPOINTMENT RESOURCE AVAILABILITY
+
 	@Override
-	public BlockExcludedDays geyExcludedDayByUuid(String uuid) throws APIException {
-		return appointmentResourceDAO.geyExcludedDayByUuid(uuid);
+	public ResourceWeeklyAvailability getResourceWeeklyAvailability(String uuid) throws APIException {
+		log.error("by constraints" + getResourceAvailbalityByContraints(null, Context.getProviderService().getProviderByUuid("fbad0240-5fc6-4409-8b5d-a39bfdcb4245"),
+				null, Context.getLocationService().getLocationByUuid("7f65d926-57d6-4402-ae10-a5b3bcbf7986")));
+		return (ResourceWeeklyAvailability) resourceWeeklyAvailabilityDAO.getByUuid(uuid);
 	}
 
-	private synchronized AppointmentResource saveAppointResourceInternal(AppointmentResource appointmentResource) throws APIException {
-		//check if resource already exists
-		List<AppointmentResource> resource = getAppointmentResourceDAO().getResourceByConstraints(appointmentResource.getStartDate(), appointmentResource.getEndDate(),
-				appointmentResource.getStartTime(), appointmentResource.getEndTime(), appointmentResource.getLocation(), null);
-		if (resource.size() > 0) {
-			throw new APIException("Resource with those details already exist");
-		} else {
-			if (CollectionUtils.isEmpty(appointmentResource.getDaysList())) {
-				return (AppointmentResource) getAppointmentResourceDAO().saveOrUpdate(appointmentResource);
-			}
-			appointmentResource.setDaysList(null);
-
-			return (AppointmentResource) getAppointmentResourceDAO().saveOrUpdate(appointmentResource);
-		}
-
+	@Override
+	public ResourceWeeklyAvailability getResourceWeeklyAvailability(Integer id) {
+		return (ResourceWeeklyAvailability) resourceWeeklyAvailabilityDAO.getById(id);
 	}
 
+	@Override
+	public ResourceWeeklyAvailability saveResourceWeeklyAvailability(ResourceWeeklyAvailability availability) throws APIException {
+		availability.setAppointmentResource(getAppointmentResource(50));
+		return (ResourceWeeklyAvailability) resourceWeeklyAvailabilityDAO.saveOrUpdate(availability);
+	}
+
+	@Override
+	public List<ResourceWeeklyAvailability> getAllResourcesAvalabilities() {
+		return resourceWeeklyAvailabilityDAO.getAll();
+	}
+
+	@Override
+	public List<ResourceWeeklyAvailability> getAllResourcesAvalabilities(boolean includeVoided) {
+		return resourceWeeklyAvailabilityDAO.getAll();
+	}
+
+	@Override
+	public ResourceWeeklyAvailability voidResourceAvailability(ResourceWeeklyAvailability availability, String reason) {
+		availability.setVoided(true);
+		availability.setVoidReason(reason);
+		return (ResourceWeeklyAvailability) resourceWeeklyAvailabilityDAO.saveOrUpdate(availability);
+	}
+
+	@Override
+	public List<ResourceWeeklyAvailability> getResourceAvailbalityByContraints(Date date, Provider provider, Time time, Location location) {
+		return resourceWeeklyAvailabilityDAO.getResourceAvailbalityByContraints(date, provider, time, location);
+	}
 
 	public TimeSlot createTimeSlot(Date date, Location location) {
 

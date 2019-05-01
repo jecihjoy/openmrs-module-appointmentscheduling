@@ -428,7 +428,7 @@
 	</changeSet>
 
 
-	<changeSet id="2019appointmentscheduling_appointment_resource" author="jecihjoy">
+	<changeSet id="2appointmentscheduling_resource_weekly_availability" author="jecihjoy">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="appointmentscheduling_appointment_resource"/>
@@ -498,7 +498,7 @@
 	</changeSet>
 
 
-	<changeSet id="2019appointmentscheduling_resource_type_map" author="jecihjoy">
+	<changeSet id="1appointmentscheduling_resource_weekly_availability" author="jecihjoy">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="appointmentscheduling_resource_type_map"/>
@@ -529,26 +529,29 @@
 	</changeSet>
 
 
-	<changeSet id="2019appointmentscheduling_block_excluded_days" author="jecihjoy">
+	<changeSet id="078appointmentscheduling_resource_weekly_availability" author="jecihjoy">
 		<preConditions onFail="MARK_RAN">
 			<not>
-				<tableExists tableName="appointmentscheduling_block_excluded_days"/>
+				<tableExists tableName="appointmentscheduling_resource_weekly_availability"/>
 			</not>
 		</preConditions>
 		<comment>
-			Create the block_excluded_days table
+			Create the resource_weekly_availability table
 		</comment>
-		<createTable tableName="appointmentscheduling_block_excluded_days">
-			<column name="excluded_date_id" type="int" autoIncrement="true">
+		<createTable tableName="appointmentscheduling_resource_weekly_availability">
+			<column name="resource_weekly_availability_id" type="int" autoIncrement="true">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="appointment_resource_id" type="int">
 				<constraints nullable="false"/>
 			</column>
-			<column name="excluded_date" type="datetime"/>
-			<column name="sequence_number" type="int">
-				<constraints nullable="false"/>
-			</column>
+			<column name="monday" type="varchar(100)"/>
+			<column name="tuesday" type="varchar(100)"/>
+			<column name="wednesday" type="varchar(100)"/>
+			<column name="thursday" type="varchar(100)"/>
+			<column name="friday" type="varchar(100)"/>
+			<column name="saturday" type="varchar(100)"/>
+			<column name="sunday" type="varchar(100)"/>
 
 			<column name="uuid" type="char(38)">
 				<constraints nullable="false" unique="true"/>
@@ -568,21 +571,21 @@
 			<column name="date_voided" type="datetime"/>
 			<column name="void_reason" type="varchar(255)" defaultValue="null"/>
 		</createTable>
-		<addForeignKeyConstraint constraintName="block_excluded_days_creator"
-								 baseTableName="appointmentscheduling_block_excluded_days" baseColumnNames="creator"
+		<addForeignKeyConstraint constraintName="resource_weekly_availability_creator"
+								 baseTableName="appointmentscheduling_resource_weekly_availability" baseColumnNames="creator"
 								 referencedTableName="users" referencedColumnNames="user_id"/>
-		<addForeignKeyConstraint constraintName="block_excluded_days_changed_by"
-								 baseTableName="appointmentscheduling_block_excluded_days" baseColumnNames="changed_by"
+		<addForeignKeyConstraint constraintName="resource_weekly_availability_changed_by"
+								 baseTableName="appointmentscheduling_resource_weekly_availability" baseColumnNames="changed_by"
 								 referencedTableName="users" referencedColumnNames="user_id"/>
-		<addForeignKeyConstraint constraintName="block_excluded_days_voided_by"
-								 baseTableName="appointmentscheduling_block_excluded_days" baseColumnNames="voided_by"
+		<addForeignKeyConstraint constraintName="resource_weekly_availability_voided_by"
+								 baseTableName="appointmentscheduling_resource_weekly_availability" baseColumnNames="voided_by"
 								 referencedTableName="users" referencedColumnNames="user_id"/>
 
-		<addForeignKeyConstraint constraintName="block_excluded_days_resource_id"
-								 baseTableName="appointmentscheduling_block_excluded_days"
+<!--		<addForeignKeyConstraint constraintName="resource_weekly_availability_resource_id"
+								 baseTableName="appointmentscheduling_resource_weekly_availability"
 								 baseColumnNames="appointment_resource_id"
 								 referencedTableName="appointmentscheduling_appointment_resource"
-								 referencedColumnNames="appointment_resource_id"/>
+								 referencedColumnNames="appointment_resource_id"/>-->
 
 	</changeSet>
 

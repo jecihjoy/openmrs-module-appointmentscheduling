@@ -86,6 +86,13 @@
                         </property>
                     </bean>
                 </property>
+                <property name="resourceWeeklyAvailabilityDAO">
+                    <bean class="${project.parent.groupId}.${project.parent.artifactId}.api.db.hibernate.HibernateResourceWeeklyAvailabilityDAO">
+                        <property name="sessionFactory">
+                            <ref bean="dbSessionFactory" />
+                        </property>
+                    </bean>
+                </property>
             </bean>
         </property>
         <property name="preInterceptors">

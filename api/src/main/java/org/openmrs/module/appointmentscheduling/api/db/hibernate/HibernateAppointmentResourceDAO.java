@@ -4,7 +4,7 @@ import org.hibernate.Query;
 import org.openmrs.Location;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.appointmentscheduling.AppointmentResource;
-import org.openmrs.module.appointmentscheduling.BlockExcludedDays;
+import org.openmrs.module.appointmentscheduling.ResourceWeeklyAvailability;
 import org.openmrs.module.appointmentscheduling.api.db.AppointmentResourceDAO;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -102,7 +102,7 @@ public class HibernateAppointmentResourceDAO extends HibernateSingleClassDAO
             List<String> excludedDays = new ArrayList<>();
             List<String> dates = query.list();
             for (String date : dates) {
-                BlockExcludedDays days = new BlockExcludedDays();
+                ResourceWeeklyAvailability days = new ResourceWeeklyAvailability();
                 excludedDays.add(date);
             }
             return excludedDays;
@@ -110,16 +110,6 @@ public class HibernateAppointmentResourceDAO extends HibernateSingleClassDAO
         } else {
             throw new DAOException("Cannot get excluded days, date and location not provided");
         }
-    }
-
-    @Override
-    public BlockExcludedDays geyExcludedDayByUuid(String uuid) throws DAOException {
-        Query query = super.sessionFactory.getCurrentSession().createSQLQuery(
-                "SELECT * from appointmentscheduling_block_excluded_days rdays WHERE rdays.excluded_date = :uuid");
-
-        if (uuid != null)
-            query.setParameter("uuid", uuid);
-        return (BlockExcludedDays) query.uniqueResult();
     }
 
     private Time getTimeFromDate(Date date) {
@@ -133,5 +123,18 @@ public class HibernateAppointmentResourceDAO extends HibernateSingleClassDAO
 
     private String getTime(Date date) {
         return new SimpleDateFormat("HH:mm:ss").format(date);
+    }
+
+    @Override
+    public ResourceWeeklyAvailability getResourceWeeklyAvailability(String uuid) throws DAOException {
+        return (ResourceWeeklyAvailability) super.sessionFactory.getCurrentSession()
+                .createQuery("from ResourceWeeklyAvailability at where at.uuid = :uuid").setString("uuid", uuid)
+                .uniqueResult();
+    }
+
+    @Override
+    public ResourceWeeklyAvailability saveResourceWeeklyAvailability(ResourceWeeklyAvailability availability) {
+        super.sessionFactory.getCurrentSession().saveOrUpdate(availability);
+        return availability;
     }
 }

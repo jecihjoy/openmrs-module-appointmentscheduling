@@ -3,7 +3,7 @@ package org.openmrs.module.appointmentscheduling.rest.resource.openmrs1_9;
 import org.openmrs.Location;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.appointmentscheduling.AppointmentResource;
-import org.openmrs.module.appointmentscheduling.BlockExcludedDays;
+import org.openmrs.module.appointmentscheduling.ResourceWeeklyAvailability;
 import org.openmrs.module.appointmentscheduling.api.AppointmentService;
 import org.openmrs.module.appointmentscheduling.rest.controller.AppointmentRestController;
 import org.openmrs.module.webservices.rest.web.RequestContext;
@@ -71,7 +71,7 @@ public class AppointmentResourceResource1_9 extends DataDelegatingCrudResource<A
             description.addProperty("provider", Representation.DEFAULT);
             description.addProperty("location", Representation.REF);
             description.addProperty("types", Representation.REF);
-            description.addProperty("daysList", Representation.REF);
+//            description.addProperty("daysList", Representation.REF);
             description.addProperty("includeWeekends");
             description.addSelfLink();
             description.addLink("full", ".?v=" + RestConstants.REPRESENTATION_FULL);
@@ -87,7 +87,7 @@ public class AppointmentResourceResource1_9 extends DataDelegatingCrudResource<A
             description.addProperty("provider", Representation.DEFAULT);
             description.addProperty("location", Representation.REF);
             description.addProperty("types", Representation.REF);
-            description.addProperty("daysList", Representation.DEFAULT);
+//            description.addProperty("daysList", Representation.DEFAULT);
             description.addProperty("includeWeekends");
             description.addProperty("auditInfo", findMethod("getAuditInfo"));
             description.addSelfLink();
@@ -105,16 +105,16 @@ public class AppointmentResourceResource1_9 extends DataDelegatingCrudResource<A
         description.addRequiredProperty("endTime");
         description.addRequiredProperty("location");
         description.addRequiredProperty("types");
-        description.addRequiredProperty("daysList");
+//        description.addRequiredProperty("daysList");
         description.addProperty("includeWeekends");
         description.addProperty("provider");
         return description;
     }
 
-    @PropertySetter("daysList")
-    public static void setDaysList(AppointmentResource instance, List<BlockExcludedDays> blockExcludedDays) {
-        instance.setDaysList(blockExcludedDays);
-    }
+/*    @PropertySetter("daysList")
+    public static void setDaysList(AppointmentResource instance, List<ResourceWeeklyAvailability> resourceDayAvailabilities) {
+        instance.setDaysList(resourceDayAvailabilities);
+    }*/
 
     @Override
     public DelegatingResourceDescription getUpdatableProperties() throws ResourceDoesNotSupportOperationException {
