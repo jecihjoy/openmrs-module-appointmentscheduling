@@ -16,6 +16,8 @@ package org.openmrs.module.appointmentscheduling.api.db.hibernate;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.Order;
@@ -75,5 +77,20 @@ public class HibernateAppointmentStatusHistoryDAO extends HibernateSingleClassDA
 		String hql = "delete from AppointmentStatusHistory where appointment= :appointment";
 		Query query = super.sessionFactory.getCurrentSession().createQuery(hql);
 		query.setParameter("appointment", appointment).executeUpdate();
+	}
+
+	@Override
+	public List<AppointmentStatusHistory> getAppointmentStatusHistories(Appointment appointment) {
+		String query = "Select appointmentHistory from AppointmentStatusHistory AS appointmentHistory where appointmentHistory.appointment=:appointment";
+		return  (List<AppointmentStatusHistory>) super.sessionFactory.getCurrentSession().createQuery(query)
+				.setParameter("appointment", appointment).list();
+
+	}
+
+	@Override
+	public AppointmentStatus getAppointmentStatus(Appointment appointment) {
+		String q = "SELECT status FROM openmrs.appointmentscheduling_appointment where appointment_id = :appointmentID";
+		String status =  super.sessionFactory.getCurrentSession().createSQLQuery(q).setParameter("appointmentID", appointment.getId()).uniqueResult().toString();
+		return AppointmentStatus.valueOf(status);
 	}
 }

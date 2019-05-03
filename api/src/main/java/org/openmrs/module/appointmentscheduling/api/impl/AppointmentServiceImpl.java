@@ -552,7 +552,13 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 				.saveOrUpdate(appointmentStatusHistory);
 	}
 
-    @Override
+	@Override
+	@Transactional
+	public List<AppointmentStatusHistory> getAppointmentStatusHistories(Appointment appointment) {
+		return getAppointmentStatusHistoryDAO().getAppointmentStatusHistories(appointment);
+	}
+
+	@Override
     @Transactional(readOnly = true)
     public List<AppointmentRequest> getAllAppointmentRequests() {
         return appointmentRequestDAO.getAll();
@@ -1155,8 +1161,14 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 				appointment);
 	}
 
+	@Override
+	@Transactional
+	public AppointmentStatus getAppointmentStatus(Appointment appointment) {
+		return appointmentStatusHistoryDAO.getAppointmentStatus(appointment);
+	}
+
 	private List<AppointmentBlock> getAppointmentBlockList(Location location,
-			Date date, List<AppointmentType> appointmentTypes) {
+														   Date date, List<AppointmentType> appointmentTypes) {
 		return getAppointmentBlocksByTypes(setDateToStartOfDay(date),
 				setDateToEndOfDay(date), location.getId().toString(), null,
 				appointmentTypes);

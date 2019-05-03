@@ -44,14 +44,14 @@ import java.util.Set;
  * <code>
  * Context.getService(AppointmentService.class).someMethod();
  * </code>
- * 
+ *
  * @see org.openmrs.api.context.Context
  */
 public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Gets all appointment types.
-	 * 
+	 *
 	 * @return a list of appointment type objects.
 	 * @should get all appointment types
 	 */
@@ -60,7 +60,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Get all appointment types based on includeRetired flag
-	 * 
+	 *
 	 * @param includeRetired
 	 * @return List of all appointment types
 	 * @should get all appointment types based on include retired flag.
@@ -70,7 +70,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Gets an appointment type by its appointment type id.
-	 * 
+	 *
 	 * @param appointmentTypeId the appointment type id.
 	 * @return the appointment type object found with the given id, else null.
 	 * @should get correct appointment type
@@ -80,7 +80,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Gets an appointment type by its UUID.
-	 * 
+	 *
 	 * @param uuid the appointment type UUID.
 	 * @return the appointment type object found with the given uuid, else null.
 	 * @should get correct appointment type
@@ -91,7 +91,7 @@ public interface AppointmentService extends OpenmrsService {
 	/**
 	 * Gets all appointment types (including retired) whose names are similar to or contain the
 	 * given search phrase.
-	 * 
+	 *
 	 * @param fuzzySearchPhrase the search phrase to use.
 	 * @return a list of all appointment types with names similar to or containing the given phrase
 	 * @should get correct appointment types
@@ -102,7 +102,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Gets all appointment types whose names are similar to or contain the given search phrase.
-	 * 
+	 *
 	 * @param fuzzySearchPhrase the search phrase to use.
 	 * @param includeRetired whether or not to include retired types
 	 * @return a list of all appointment types with names similar to or containing the given phrase
@@ -114,7 +114,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Creates or updates the given appointment type in the database.
-	 * 
+	 *
 	 * @param appointmentType the appointment type to create or update.
 	 * @return the created or updated appointment type.
 	 * @should save new appointment type
@@ -129,7 +129,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Retires a given appointment type.
-	 * 
+	 *
 	 * @param appointmentType the appointment type to retire.
 	 * @param reason the reason why the appointment type is retired.
 	 * @return the appointment type that has been retired.
@@ -141,7 +141,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Unretires an appointment type.
-	 * 
+	 *
 	 * @param appointmentType the appointment type to unretire.
 	 * @return the unretired appointment type
 	 * @should unretire given appointment type
@@ -151,7 +151,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Completely removes an appointment type from the database. This is not reversible.
-	 * 
+	 *
 	 * @param appointmentType the appointment type to delete from the database.
 	 * @should delete given appointment type
 	 */
@@ -161,7 +161,7 @@ public interface AppointmentService extends OpenmrsService {
 	// AppointmentBlock
 	/**
 	 * Gets all appointment blocks.
-	 * 
+	 *
 	 * @return a list of appointment block objects.
 	 * @should get all appointment blocks
 	 */
@@ -170,7 +170,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Get all appointment blocks based on includeVoided flag
-	 * 
+	 *
 	 * @param includeVoided
 	 * @return List of all appointment blocks
 	 * @should get all appointment blocks based on include voided flag.
@@ -180,7 +180,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Gets an appointment block by its appointment block id.
-	 * 
+	 *
 	 * @param appointmentBlockId the appointment block id.
 	 * @return the appointment block object found with the given id, else null.
 	 * @should get correct appointment block
@@ -190,7 +190,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Gets an appointment block by its UUID.
-	 * 
+	 *
 	 * @param uuid the appointment block UUID.
 	 * @return the appointment block object found with the given uuid, else null.
 	 * @should get correct appointment block
@@ -200,7 +200,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Creates or updates the given appointment block in the database.
-	 * 
+	 *
 	 * @param appointmentBlock the appointment block to create or update.
 	 * @return the created or updated appointment block.
 	 * @should save new appointment block
@@ -215,7 +215,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Voids a given appointment block.
-	 * 
+	 *
 	 * @param appointmentBlock the appointment block to void.
 	 * @param reason the reason why the appointment block is voided.
 	 * @return the appointment block that has been voided.
@@ -228,7 +228,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Unvoids an appointment block.
-	 * 
+	 *
 	 * @param appointmentBlock the appointment block to unvoid.
 	 * @return the unvoided appointment block
 	 * @should unvoided given appointment block
@@ -238,7 +238,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Completely removes an appointment block from the database. This is not reversible.
-	 * 
+	 *
 	 * @param appointmentBlock the appointment block to delete from the database.
 	 * @should delete given appointment block
 	 */
@@ -248,7 +248,7 @@ public interface AppointmentService extends OpenmrsService {
 	/**
 	 * Gets appointment blocks which have a given date, location, provider and list of appointment
 	 * types
-	 * 
+	 *
 	 * @return a list of appointment block objects.
 	 * @should get all appointment blocks which have contains in a given date interval and
 	 *         corresponds to a given locations, provider and appointment types.
@@ -261,7 +261,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Gets appointment blocks which have a given date and location.
-	 * 
+	 *
 	 * @return a list of appointment block objects.
 	 * @should get all appointment blocks which have contains in a given date interval and
 	 *         corresponds to a given locations, provider and appointment type.
@@ -273,7 +273,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Gets appointment blocks which overlap to the given appointment block
-	 * 
+	 *
 	 * @return a list of appointment block objects.
 	 * @should get all appointment blocks which overlap to the given appointment block
 	 * @should allow overlapping providerless appointment blocks
@@ -285,7 +285,7 @@ public interface AppointmentService extends OpenmrsService {
 	// Appointment
 	/**
 	 * Gets all appointments.
-	 * 
+	 *
 	 * @return a list of appointment objects.
 	 * @should get all appointment
 	 */
@@ -294,7 +294,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Get all appointments based on includeVoided flag
-	 * 
+	 *
 	 * @param includeVoided
 	 * @return List of all appointments
 	 * @should get all appointments based on include voided flag.
@@ -304,7 +304,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Gets an appointment by its appointment id.
-	 * 
+	 *
 	 * @param appointmentId the appointment id.
 	 * @return the appointment object found with the given id, else null.
 	 * @should get correct appointment
@@ -314,7 +314,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Gets an appointment by its UUID.
-	 * 
+	 *
 	 * @param uuid the appointment UUID.
 	 * @return the appointment object found with the given uuid, else null.
 	 * @should get correct appointment
@@ -324,7 +324,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Creates or updates the given appointment in the database.
-	 * 
+	 *
 	 * @param appointment the appointment to create or update.
 	 * @return the created or updated appointment.
 	 * @should save new appointment
@@ -335,7 +335,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Voids a given appointment.
-	 * 
+	 *
 	 * @param appointment the appointment to void.
 	 * @param reason the reason why the appointment is voided.
 	 * @return the appointment that has been voided.
@@ -346,7 +346,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Unvoids an appointment.
-	 * 
+	 *
 	 * @param appointment the appointment to unvoid.
 	 * @return the unvoid appointment
 	 * @should unvoid given appointment
@@ -356,7 +356,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Completely removes an appointment from the database. This is not reversible.
-	 * 
+	 *
 	 * @param appointment the appointment to delete from the database.
 	 * @should delete given appointment
 	 */
@@ -365,7 +365,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Returns all Appointments for a given Patient
-	 * 
+	 *
 	 * @param patientId the patient id to search by.
 	 * @return all the appointments for the given patient id.
 	 * @should return all of the appointments for the given patient.
@@ -375,7 +375,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Returns the appointment corresponding to the given visit.
-	 * 
+	 *
 	 * @param visitId the visit id to search by.
 	 * @return the appointment that is related to this visit, null if there isnt any.
 	 */
@@ -386,7 +386,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Gets all time slots.
-	 * 
+	 *
 	 * @return a list of time slot objects.
 	 * @should get all time slots
 	 */
@@ -395,7 +395,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Get all time slots based on includeVoided flag
-	 * 
+	 *
 	 * @param includeVoided
 	 * @return List of all time slots
 	 * @should get all time slots based on include voided flag.
@@ -405,7 +405,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Creates or updates the given time slot in the database.
-	 * 
+	 *
 	 * @param timeSlot the time slot to create or update.
 	 * @return the created or updated time slot.
 	 * @should save new time slot
@@ -416,7 +416,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Gets a a time slot by its id.
-	 * 
+	 *
 	 * @param timeSlotId the time slot id.
 	 * @return the time slot object found with the given id, else null.
 	 * @should get correct time slot
@@ -426,7 +426,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Gets a time slot by its UUID.
-	 * 
+	 *
 	 * @param uuid the time slot UUID.
 	 * @return the time slot object found with the given uuid, else null.
 	 * @should get correct time slot
@@ -436,7 +436,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Voids a given time slot.
-	 * 
+	 *
 	 * @param timeSlot the time slot to void.
 	 * @param reason the reason why the time slot is voided.
 	 * @return the time slot that has been voided.
@@ -447,7 +447,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Unvoids a time slot.
-	 * 
+	 *
 	 * @param timeSlot the time slot to unvoid.
 	 * @return the unvoided time slot
 	 * @should unvoid given time slot
@@ -457,7 +457,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Completely removes a time slot from the database. This is not reversible.
-	 * 
+	 *
 	 * @param timeSlot the time slot to delete from the database.
 	 * @should delete given time slot
 	 */
@@ -466,7 +466,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Should retrieve all appointments in the given time slot.
-	 * 
+	 *
 	 * @param timeSlot the time slot to search by.
 	 * @return the appointments in the given time slot.
 	 * @should not return voided appointments
@@ -477,7 +477,7 @@ public interface AppointmentService extends OpenmrsService {
 	/**
 	 * Should retrieve all appointments in the given time slot that do not have a status that means
 	 * the appointment has been cancelled (ie status=CANCELLED, CANCELLED_AND_NEEDS_RESCHEDULE)
-	 * 
+	 *
 	 * @param timeSlot the time slot to search by.
 	 * @return the appointments in the given time slo
 	 * @should not return missed, cancelled, and needs_reschedule appointments.
@@ -489,7 +489,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Gets a count of the number of appointments in a time slot
-	 * 
+	 *
 	 * @param timeSlot the time slot to search by.
 	 * @return the count of appointments in the given time slot
 	 * @should not count voided appointments
@@ -500,7 +500,7 @@ public interface AppointmentService extends OpenmrsService {
 	/**
 	 * Gets a count of all appointments in the given time slot that do not have a status that means
 	 * the appointment has been cancelled (ie status=CANCELLED, CANCELLED_AND_NEEDS_RESCHEDULE)
-	 * 
+	 *
 	 * @param timeSlot the time slot to search by.
 	 * @return the count of appointments in the given time slot
 	 * @should not count missed, cancelled and needs rescheduled appointments.
@@ -512,7 +512,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Should retrieve all time slots in the given appointment block.
-	 * 
+	 *
 	 * @param appointmentBlock - the appointment block to search by.
 	 * @return the time slots in the given appointment block.
 	 * @should not return voided time slots
@@ -524,7 +524,7 @@ public interface AppointmentService extends OpenmrsService {
 	// Appointment Status History
 	/**
 	 * Gets all appointment status histories.
-	 * 
+	 *
 	 * @return a list of appointment status history objects.
 	 * @should get all appointment status histories
 	 */
@@ -533,7 +533,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Gets an appointment status by its appointment status history id.
-	 * 
+	 *
 	 * @param appointmentStatusHistoryId the appointment status history id.
 	 * @return the appointment status history object found with the given id, else null.
 	 * @should get correct appointment status history
@@ -545,7 +545,7 @@ public interface AppointmentService extends OpenmrsService {
 	/**
 	 * Gets all appointment status histories whose statuses are similar to or contain the given
 	 * status.
-	 * 
+	 *
 	 * @param status the search phrase to use.
 	 * @return a list of all appointment status histories with names identical to or containing the
 	 *         given status
@@ -557,7 +557,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Creates or updates the given appointment status history in the database.
-	 * 
+	 *
 	 * @param AppointmentStatusHistory the appointment status history to create or update.
 	 * @return the created or updated appointment status history.
 	 * @should save new appointment status history
@@ -567,6 +567,15 @@ public interface AppointmentService extends OpenmrsService {
 	AppointmentStatusHistory saveAppointmentStatusHistory(
 			AppointmentStatusHistory appointmentStatusHistory)
 			throws APIException;
+
+	/**
+	 * get all statuses of the
+	 * @param appointment specified
+	 * @return
+	 */
+
+	@Authorized(AppointmentUtils.PRIV_VIEW_APPOINTMENTS)
+	List<AppointmentStatusHistory> getAppointmentStatusHistories(Appointment appointment);
 
     /**
      * Gets all appointments requests
@@ -663,7 +672,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Retrieves the most recent appointment for a given patient.
-	 * 
+	 *
 	 * @param patient the patient for which we are retrieving.
 	 * @return The most recent appointment for the given patient, null if no appointments were set.
 	 */
@@ -672,7 +681,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Return a list of time slots that stands within the given constraints.
-	 * 
+	 *
 	 * @param appointmentType - Type of the appointment
 	 * @param fromDate - (optional) earliest start date. (defaults to current date)
 	 * @param toDate - (optional) latest start date.
@@ -708,7 +717,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Return a list of time slots that stands within the given constraints.
-	 * 
+	 *
 	 * @param appointmentType - Type of the appointment
 	 * @param fromDate - (optional) earliest start date.
 	 * @param toDate - (optional) latest start date.
@@ -746,7 +755,7 @@ public interface AppointmentService extends OpenmrsService {
 	 * and its value. The preferred identifier will be the first in the list. The format of each
 	 * string will be: "<identifier name>: <identifier value>" for example:
 	 * "Old Identification Number: 2142"
-	 * 
+	 *
 	 * @param patient the patient.
 	 * @return a list of strings where each string represents an identifier of the patient.
 	 */
@@ -755,7 +764,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Returns the amount of minutes left in a given time slot.
-	 * 
+	 *
 	 * @param timeSlot the given time slot.
 	 * @return The amount of minutes left in the given time slot. Returns null if the given time
 	 *         slot was null;
@@ -767,7 +776,7 @@ public interface AppointmentService extends OpenmrsService {
 	/**
 	 * [Utility Method] Returns all the descendants of a given location recursively. Call with null
 	 * descendants.
-	 * 
+	 *
 	 * @param location the location that is ancestor to all of the location in the returned set.
 	 * @param descendants the result set which is being built recursively.
 	 * @return A set that contains all of the descendants of the given location.
@@ -778,7 +787,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Retrieves Appointments that satisfy the given constraints
-	 * 
+	 *
 	 * @param fromDate - The appointment start date
 	 * @param toDate - The appointment end date
 	 * @param location - The appointment location
@@ -795,7 +804,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Retrieves Appointments that satisfy the given constraints
-	 * 
+	 *
 	 * @param fromDate - The appointment start date
 	 * @param toDate - The appointment end date
 	 * @param location - The appointment location
@@ -813,7 +822,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Retrieves Appointments that satisfy the given constraints
-	 * 
+	 *
 	 * @param fromDate - The appointment start date
 	 * @param toDate - The appointment end date
 	 * @param location - The appointment location
@@ -851,7 +860,7 @@ public interface AppointmentService extends OpenmrsService {
 		   VisitType visitType, Visit visit) throws APIException;
 	/**
 	 * Retrives the start date of the current status of a given appointment.
-	 * 
+	 *
 	 * @param appointment - The appointment.
 	 * @return the start date of the current status of a given appointment.
 	 */
@@ -860,7 +869,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Changes the given appointment status.
-	 * 
+	 *
 	 * @param appointment - The appointment
 	 * @param newStatus - The new status
 	 */
@@ -870,7 +879,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Computes the average duration (in Minutes) of a status history by appointment type
-	 * 
+	 *
 	 * @param fromDate The lower bound of the date interval.
 	 * @param endDate The upper bound of the date interval.
 	 * @param status The AppointmentStatus status to filter histories by.
@@ -882,7 +891,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Computes the average duration (in Minutes) of a status history by provider
-	 * 
+	 *
 	 * @param fromDate The lower bound of the date interval.
 	 * @param endDate The upper bound of the date interval.
 	 * @param status The AppointmentStatus status to filter histories by.
@@ -894,7 +903,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Retrieves the amount of status history objects in the given criteria
-	 * 
+	 *
 	 * @param fromDate The lower bound of the date interval.
 	 * @param endDate The upper bound of the date interval.
 	 * @param status The AppointmentStatus status to filter histories by.
@@ -906,7 +915,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Retrieves the distribution of appointment types in the given appointments dates range.
-	 * 
+	 *
 	 * @param fromDate The lower bound of the date range.
 	 * @param toDate The upper bound of the date range.
 	 * @return Map of <AppointmentType,Integer> that reflects the appointment types distribution in
@@ -920,7 +929,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * [Utility Method] Retrieves all providers sorted ascending alphabetically
-	 * 
+	 *
 	 * @param includeRetired whether to include retired providers
 	 * @return sorted list of providers
     */
@@ -929,7 +938,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * [Utility Method] Retrieves all appointment types sorted ascending alphabetically
-	 * 
+	 *
 	 * @param includeRetired whether to include retired appointment types
 	 * @return sorted list of appointment types
 	 */
@@ -938,7 +947,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Retrieves list of unvoided appointments that their current status is one of the given states.
-	 * 
+	 *
 	 * @param states List of states to retrieve by.
 	 * @return list of unvoided appointments that their current status is one of the given states.
 	 */
@@ -949,7 +958,7 @@ public interface AppointmentService extends OpenmrsService {
 	 * Update the status of PAST appointments according to the following conditions: "SCHEDULED"
 	 * will be updated to "MISSED" "WAITING" or "WALKIN" will be updated to "MISSED"
 	 * "INCONSULTATION" will be updated to "COMPLETED"
-	 * 
+	 *
 	 * @return List of the updated appointments
 	 */
     @Authorized(AppointmentUtils.PRIV_SCHEDULE_APPOINTMENTS)
@@ -960,7 +969,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Retrieves the list of scheduled (appts in states SCHEDULED or RESCHEDULED for a patient)
-	 * 
+	 *
 	 * @param patient
 	 * @return
 	 */
@@ -969,7 +978,7 @@ public interface AppointmentService extends OpenmrsService {
 
 	/**
 	 * Books a new appointment
-	 * 
+	 *
 	 * @param appointment
 	 * @param allowOverbook
 	 * @return The newly-created appointment
@@ -980,4 +989,7 @@ public interface AppointmentService extends OpenmrsService {
     @Authorized(AppointmentUtils.PRIV_SCHEDULE_APPOINTMENTS)
 	Appointment bookAppointment(Appointment appointment, Boolean allowOverbook)
 			throws TimeSlotFullException;
+
+    @Authorized()
+	AppointmentStatus getAppointmentStatus(Appointment appointment);
 }

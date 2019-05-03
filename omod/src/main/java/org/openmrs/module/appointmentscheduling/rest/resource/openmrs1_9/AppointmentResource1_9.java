@@ -1,5 +1,6 @@
 package org.openmrs.module.appointmentscheduling.rest.resource.openmrs1_9;
 
+import com.sun.org.apache.bcel.internal.classfile.Constant;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.Provider;
@@ -7,6 +8,7 @@ import org.openmrs.Visit;
 import org.openmrs.VisitType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.appointmentscheduling.Appointment;
+import org.openmrs.module.appointmentscheduling.AppointmentStatusHistory;
 import org.openmrs.module.appointmentscheduling.AppointmentType;
 import org.openmrs.module.appointmentscheduling.api.AppointmentService;
 import org.openmrs.module.appointmentscheduling.exception.TimeSlotFullException;
@@ -126,11 +128,45 @@ public class AppointmentResource1_9 extends DataDelegatingCrudResource<Appointme
 	
 	protected Appointment save(Appointment appointment, Boolean allowOverbook) {
 		if (appointment.getId() != null) {
+			 final int id = appointment.getAppointmentId();
 			// existing appointments get updated
-			return Context.getService(AppointmentService.class).saveAppointment(appointment);
+			AppointmentService service = Context.getService(AppointmentService.class);
+
+
+
+			Appointment appntBeforeUpdate = service.getAppointment(id);
+			log.error("by iddddddddddd before" + appntBeforeUpdate.getStatus());
+			log.error("by iddddddddddd" +service.getAppointmentStatus(service.getAppointment(298)));
+			log.error("appointment object" + service.getAppointmentStatus(appointment));
+			log.error("appnt id" +appointment.getId());
+			log.error("appnt object id " +service.getAppointmentStatus(service.getAppointment(id)));
+			log.error("appnt object uuid " +service.getAppointmentStatus(service.getAppointmentByUuid(appointment.getUuid())));
+
+			AppointmentStatusHistory history = new AppointmentStatusHistory();
+			history.setAppointment(appointment);
+			history.setEndDate(new Date());
+			history.setStartDate(service.getAppointmentCurrentStatusStartDate(appointment));
+			history.setStatus(appntBeforeUpdate.getStatus());
+			log.error("after" +service.getAppointmentStatus(appointment));
+
+
+			service.saveAppointmentStatusHistory(history);
+			service.saveAppointment(appointment);
+
+			if (appntBeforeUpdate.getStatus() == AppointmentStatus.COMPLETED
+					|| appntBeforeUpdate.getStatus() == AppointmentStatus.CANCELLED) {
+				Visit visit = appointment.getVisit();
+				if (visit != null && visit.getStopDatetime() != null) {
+					visit.setStopDatetime(new Date());
+					Context.getVisitService().saveVisit(visit);
+				}
+			}
+			return appointment;
+
 		} else {
 			// new appointments get booked
 			try {
+				updateAppointment();
 				return Context.getService(AppointmentService.class).bookAppointment(appointment, allowOverbook);
 			}
 			catch (TimeSlotFullException e) {
@@ -249,5 +285,15 @@ public class AppointmentResource1_9 extends DataDelegatingCrudResource<Appointme
 	
 	public String getDisplayString(Appointment appointment) {
 		return appointment.getAppointmentType().getName() + " : " + appointment.getStatus();
+	}
+
+	public void updateAppointment(){
+		AppointmentService service = Context.getService(AppointmentService.class);
+		Appointment appntBeforeUpdate = service.getAppointment(298);
+		log.error("status by id" +appntBeforeUpdate.getStatus());
+
+		Appointment appntBeforeUpdatebyuuid = service.getAppointmentByUuid("198119a5-a8d4-4d34-82b7-c9fd40c93079");
+		log.error("status by uuid" +appntBeforeUpdatebyuuid.getStatus());
+
 	}
 }
