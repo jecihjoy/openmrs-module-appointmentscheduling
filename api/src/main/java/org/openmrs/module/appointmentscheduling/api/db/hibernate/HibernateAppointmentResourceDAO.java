@@ -1,7 +1,5 @@
 package org.openmrs.module.appointmentscheduling.api.db.hibernate;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
 import org.openmrs.Location;
 import org.openmrs.Provider;
@@ -18,7 +16,6 @@ import java.util.List;
 
 public class HibernateAppointmentResourceDAO extends HibernateSingleClassDAO
         implements AppointmentResourceDAO {
-    protected final Log log = LogFactory.getLog(this.getClass());
 
     /**
      * You must call this before using any of the data access methods, since it's not actually
