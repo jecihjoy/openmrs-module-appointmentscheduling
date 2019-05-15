@@ -206,17 +206,17 @@ public class AppointmentResource1_9 extends DataDelegatingCrudResource<Appointme
 				context.getParameter("maxDefaultPeriod"), Integer.class) : 0;
 
 		if (statuses != null && (statuses.get(0).equals(EARLY))) {
-			return new NeedsPaging<Appointment>(Context.getService(AppointmentService.class).getEarlyVisits(
+			return new NeedsPaging<Appointment>(Context.getService(AppointmentService.class).getEalyAppointments(
 					fromDate, toDate, location, provider, appointmentType, statuses.get(0), visitType), context);
 		}
 
 		if (statuses != null && (statuses.get(0).equals(LATE))) {
-			return new NeedsPaging<Appointment>(Context.getService(AppointmentService.class).getLateVisits(
+			return new NeedsPaging<Appointment>(Context.getService(AppointmentService.class).getLateAppointments(
 					fromDate, toDate, location, provider, appointmentType, statuses.get(0), visitType), context);
 		}
 
 		if(minDays != 0 && maxDays != 0 ){
-			return new NeedsPaging<Appointment>(Context.getService(AppointmentService.class).getDefaultersList(
+			return new NeedsPaging<Appointment>(Context.getService(AppointmentService.class).getMissedAppointments(
 					minDays, maxDays, provider, appointmentType, visitType, location), context);
 		}
 

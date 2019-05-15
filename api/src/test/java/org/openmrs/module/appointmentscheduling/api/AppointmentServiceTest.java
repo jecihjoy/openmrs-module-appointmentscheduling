@@ -641,13 +641,13 @@ public class AppointmentServiceTest extends BaseModuleContextSensitiveTest {
 	@Test
 	@Verifies(value = "should get all Early Visits", method = "getEarlyVisits(Date fromDate,Date toDate, Location location, Provider provider," +
 			" AppointmentType appointmentType, AppointmentStatus status, VisitType visitType")
-	public void getEarlyVisits_shouldGetEarlyVisits()
+	public void getEarlyVisits_shouldGetEalyAppointments()
 			throws Exception {
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		Date fromDate = format.parse("2005-01-01");
 		Date toDate = format.parse("2006-02-02");
 		List<Appointment> appointments = service
-				.getEarlyVisits(fromDate, toDate, null, null, null, EARLY, null);
+				.getEalyAppointments(fromDate, toDate, null, null, null, EARLY, null);
 		assertEquals(0, appointments.size());
 
 	}
@@ -655,13 +655,13 @@ public class AppointmentServiceTest extends BaseModuleContextSensitiveTest {
 	@Test
 	@Verifies(value = "should get all Late Visits", method = "getLateVisits(Date fromDate,Date toDate, Location location, Provider provider," +
 			" AppointmentType appointmentType, AppointmentStatus status, VisitType visitType")
-	public void getLateVisits_shouldGetLateVisits()
+	public void getLateVisits_shouldGetLateAppointments()
 			throws Exception {
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		Date fromDate = format.parse("2005-01-01");
 		Date toDate = format.parse("2006-02-02");
 		List<Appointment> appointments = service
-				.getLateVisits(fromDate, toDate, null, null, null, EARLY, null);
+				.getLateAppointments(fromDate, toDate, null, null, null, EARLY, null);
 		assertEquals(0, appointments.size());
 
 	}

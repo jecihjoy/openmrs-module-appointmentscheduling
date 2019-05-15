@@ -13,27 +13,22 @@
  */
 package org.openmrs.module.appointmentscheduling.api.db.hibernate;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
-import org.openmrs.Patient;
-import org.openmrs.Provider;
-import org.openmrs.Visit;
-import org.openmrs.VisitType;
+import org.openmrs.*;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
-import org.openmrs.module.appointmentscheduling.Appointment;
+import org.openmrs.module.appointmentscheduling.*;
 import org.openmrs.module.appointmentscheduling.Appointment.AppointmentStatus;
-import org.openmrs.module.appointmentscheduling.AppointmentBlock;
-import org.openmrs.module.appointmentscheduling.AppointmentType;
-import org.openmrs.module.appointmentscheduling.TimeSlot;
 import org.openmrs.module.appointmentscheduling.api.db.AppointmentDAO;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,6 +40,8 @@ import static org.openmrs.module.appointmentscheduling.Appointment.AppointmentSt
 public class HibernateAppointmentDAO extends HibernateSingleClassDAO
 		implements
 			AppointmentDAO {
+
+	protected final Log log = LogFactory.getLog(this.getClass());
 
 	public HibernateAppointmentDAO() {
 		super(Appointment.class);
@@ -270,6 +267,44 @@ public class HibernateAppointmentDAO extends HibernateSingleClassDAO
 			query.setParameter("visitType", visitType);
 
 		return query.list();
+	}
+
+	@Override
+	public List<AppointmentDailyCount> getAppointmentDailyCount(Date fromDate, Date toDate, Location location, Provider provider, AppointmentType appointmentType, AppointmentStatus status, VisitType visitType) throws DAOException {
+		String stringQuery = "SELECT count(appointment_id), date_format(ts.start_date,'%Y-%m-%d') as monthDate  " +
+				"FROM openmrs.appointmentscheduling_appointment ap,  " +
+				"openmrs.appointmentscheduling_time_slot ts  " +
+				"where ap.time_slot_id = ts.time_slot_id AND status = 'SCHEDULED'   " +
+				"AND date_format(ts.start_date,'%Y-%m-%d') between '2019-07-14' AND '2020-03-06'  " +
+				"GROUP BY monthDate ";
+	/*	if(fromDate != null || toDate != null || location !=null || provider != null || appointmentType != null || status != null || visitType != null) {
+			stringQuery =
+		}*/
+		Query query = super.sessionFactory.getCurrentSession().createSQLQuery(stringQuery);
+
+		log.error("values returned" +query.list());
+
+	/*	if (fromDate != null)
+			query.setParameter("fromDate", fromDate);*/
+/*		if (status != null) {
+			query.setParameter("status", status);
+		}*/
+//		if (toDate != null) {
+/*			query.setParameter("toDate", toDate);
+		}*/
+		List<AppointmentDailyCount> dailyCounts = new ArrayList<AppointmentDailyCount>();
+		List<Object[]> values = query.list();
+		log.error("values returned" +values.size());
+		for (Object[] obj : values){
+			AppointmentDailyCount  val = new AppointmentDailyCount();
+			val.setDailyCount(((BigInteger) obj[0]).intValue());
+			val.setDate(new Date());
+			val.setAppointments(null);
+			dailyCounts.add(val);
+		}
+		log.error("daily counts " + dailyCounts.size());
+		log.error("daily counts " + dailyCounts);
+		return dailyCounts;
 	}
 
 	private Criteria createAppointmentsInTimeSlotCriteria(TimeSlot timeSlot) {

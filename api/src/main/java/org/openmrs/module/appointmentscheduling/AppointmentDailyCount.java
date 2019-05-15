@@ -1,12 +1,9 @@
 package org.openmrs.module.appointmentscheduling;
 
-import org.openmrs.BaseOpenmrsData;
-
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-public class AppointmentDailyCount extends BaseOpenmrsData implements Serializable {
+public class AppointmentDailyCount {
 
     private Date date;
 
@@ -48,13 +45,4 @@ public class AppointmentDailyCount extends BaseOpenmrsData implements Serializab
         this.dailyCount = dailyCount;
     }
 
-    @Override
-    public Integer getId() {
-        return null;
-    }
-
-    @Override
-    public void setId(Integer integer) {
-
-    }
 }

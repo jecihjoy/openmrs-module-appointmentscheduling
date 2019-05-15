@@ -1174,7 +1174,7 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 	}
 
 	@Override
-	public List<Appointment> getEarlyVisits(Date fromDate,
+	public List<Appointment> getEalyAppointments(Date fromDate,
 											Date toDate, Location location, Provider provider, AppointmentType appointmentType,
 											AppointmentStatus status, VisitType visitType) throws APIException {
 		List<Appointment> allCompletedAppnts = getAppointmentsByConstraints(fromDate,
@@ -1190,7 +1190,7 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 	}
 
 	@Override
-	public List<Appointment> getLateVisits(Date fromDate,
+	public List<Appointment> getLateAppointments(Date fromDate,
 										   Date toDate, Location location, Provider provider, AppointmentType appointmentType,
 										   AppointmentStatus status, VisitType visitType) throws APIException {
 		List<Appointment> allCompletedAppnts = getAppointmentsByConstraints(fromDate,
@@ -1207,7 +1207,7 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 	}
 
 	@Override
-	public List<Appointment> getDefaultersList(int minDays, int maxDays, Provider provider, AppointmentType type,
+	public List<Appointment> getMissedAppointments(int minDays, int maxDays, Provider provider, AppointmentType type,
 											   VisitType visitType, Location location) throws APIException {
 		List<Appointment> appointments = getAppointmentDAO().getDefaultersList(minDays, maxDays, provider, type, visitType);
 
@@ -1236,6 +1236,11 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 
 		return defaultedAppointmentsInLocation;
 
+	}
+
+	@Override
+	public List<AppointmentDailyCount> getAppointmentDailyCount(Date fromDate, Date toDate, Location location, Provider provider) {
+		return appointmentDAO.getAppointmentDailyCount(null, null, null, null, null, null, null);
 	}
 
 	private List<AppointmentBlock> getAppointmentBlockList(Location location,

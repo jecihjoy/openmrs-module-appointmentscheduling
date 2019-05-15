@@ -31,6 +31,7 @@ import org.openmrs.module.appointmentscheduling.AppointmentType;
 import org.openmrs.module.appointmentscheduling.AppointmentUtils;
 import org.openmrs.module.appointmentscheduling.TimeSlot;
 import org.openmrs.module.appointmentscheduling.exception.TimeSlotFullException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -997,7 +998,7 @@ public interface AppointmentService extends OpenmrsService {
 	 * who came late/early for their visits
 	 */
 	@Authorized(AppointmentUtils.PRIV_VIEW_APPOINTMENTS)
-	List<Appointment> getEarlyVisits(Date fromDate,
+	List<Appointment> getEalyAppointments(Date fromDate,
 								  Date toDate,  Location location, Provider provider, AppointmentType appointmentType,
 								  AppointmentStatus status, VisitType visitType) throws APIException;
 
@@ -1006,7 +1007,7 @@ public interface AppointmentService extends OpenmrsService {
 	 * who came late/early for their visits
 	 */
 	@Authorized(AppointmentUtils.PRIV_VIEW_APPOINTMENTS)
-	List<Appointment> getLateVisits(Date fromDate,
+	List<Appointment> getLateAppointments(Date fromDate,
 											Date toDate,  Location location, Provider provider, AppointmentType appointmentType,
 											AppointmentStatus status, VisitType visitType) throws APIException;
 
@@ -1015,6 +1016,10 @@ public interface AppointmentService extends OpenmrsService {
 	 * minDays and maxDays range provided
 	 */
     @Authorized(AppointmentUtils.PRIV_VIEW_APPOINTMENTS)
-    List<Appointment> getDefaultersList(int minDays, int maxDays, Provider provider, AppointmentType type, VisitType visitType,
+    List<Appointment> getMissedAppointments(int minDays, int maxDays, Provider provider, AppointmentType type, VisitType visitType,
                                         Location location) throws APIException;
+
+	@Transactional(readOnly = true)
+	List<AppointmentDailyCount> getAppointmentDailyCount(Date fromDate, Date toDate, Location location, Provider provider);
+
 }

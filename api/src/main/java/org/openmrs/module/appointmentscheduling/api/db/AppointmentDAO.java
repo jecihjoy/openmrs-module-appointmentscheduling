@@ -16,17 +16,11 @@ package org.openmrs.module.appointmentscheduling.api.db;
 import java.util.Date;
 import java.util.List;
 
-import org.openmrs.Patient;
-import org.openmrs.Provider;
-import org.openmrs.Visit;
-import org.openmrs.VisitType;
+import org.openmrs.*;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
-import org.openmrs.module.appointmentscheduling.Appointment;
+import org.openmrs.module.appointmentscheduling.*;
 import org.openmrs.module.appointmentscheduling.Appointment.AppointmentStatus;
-import org.openmrs.module.appointmentscheduling.AppointmentBlock;
-import org.openmrs.module.appointmentscheduling.AppointmentType;
-import org.openmrs.module.appointmentscheduling.TimeSlot;
 import org.openmrs.module.appointmentscheduling.api.AppointmentService;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -103,4 +97,12 @@ public interface AppointmentDAO extends SingleClassDAO {
 	@Transactional(readOnly = true)
 	List<Appointment> getDefaultersList(int minDays, int maxDays, Provider provider, AppointmentType type,
 										VisitType visitType) throws DAOException;
+
+
+	/**
+	 * returns appointments daily aggregates
+	 */
+	@Transactional(readOnly = true)
+	List<AppointmentDailyCount> getAppointmentDailyCount(Date fromDate, Date toDate, Location location, Provider provider,
+														 AppointmentType appointmentType, AppointmentStatus status, VisitType visitType) throws DAOException;
 }
