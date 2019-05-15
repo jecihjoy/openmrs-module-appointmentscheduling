@@ -76,4 +76,12 @@ public class HibernateAppointmentStatusHistoryDAO extends HibernateSingleClassDA
 		Query query = super.sessionFactory.getCurrentSession().createQuery(hql);
 		query.setParameter("appointment", appointment).executeUpdate();
 	}
+
+	@Override
+	public List<AppointmentStatusHistory> getAppointmentStatusHistories(Appointment appointment) {
+		String query = "Select appointmentHistory from AppointmentStatusHistory AS appointmentHistory where appointmentHistory.appointment=:appointment";
+		return  (List<AppointmentStatusHistory>) super.sessionFactory.getCurrentSession().createQuery(query)
+				.setParameter("appointment", appointment).list();
+
+	}
 }

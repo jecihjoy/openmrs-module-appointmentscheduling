@@ -127,7 +127,8 @@ public class AppointmentResource1_9 extends DataDelegatingCrudResource<Appointme
 	protected Appointment save(Appointment appointment, Boolean allowOverbook) {
 		if (appointment.getId() != null) {
 			// existing appointments get updated
-			return Context.getService(AppointmentService.class).saveAppointment(appointment);
+			Context.getService(AppointmentService.class).changeAppointmentStatus(appointment, appointment.getStatus());
+			return appointment;
 		} else {
 			// new appointments get booked
 			try {

@@ -29,15 +29,19 @@ import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.appointmentscheduling.Appointment;
 import org.openmrs.module.appointmentscheduling.Appointment.AppointmentStatus;
 import org.openmrs.module.appointmentscheduling.AppointmentBlock;
+import org.openmrs.module.appointmentscheduling.AppointmentDailyCount;
 import org.openmrs.module.appointmentscheduling.AppointmentRequest;
 import org.openmrs.module.appointmentscheduling.AppointmentStatusHistory;
 import org.openmrs.module.appointmentscheduling.AppointmentType;
+import org.openmrs.module.appointmentscheduling.ProviderSchedule;
+import org.openmrs.module.appointmentscheduling.ProviderSchedule;
 import org.openmrs.module.appointmentscheduling.StudentT;
 import org.openmrs.module.appointmentscheduling.TimeSlot;
 import org.openmrs.module.appointmentscheduling.api.AppointmentService;
 import org.openmrs.module.appointmentscheduling.api.db.AppointmentBlockDAO;
 import org.openmrs.module.appointmentscheduling.api.db.AppointmentDAO;
 import org.openmrs.module.appointmentscheduling.api.db.AppointmentRequestDAO;
+import org.openmrs.module.appointmentscheduling.api.db.ProviderScheduleDAO;
 import org.openmrs.module.appointmentscheduling.api.db.AppointmentStatusHistoryDAO;
 import org.openmrs.module.appointmentscheduling.api.db.AppointmentTypeDAO;
 import org.openmrs.module.appointmentscheduling.api.db.TimeSlotDAO;
@@ -78,6 +82,8 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 	private AppointmentStatusHistoryDAO appointmentStatusHistoryDAO;
 
     private AppointmentRequestDAO appointmentRequestDAO;
+
+	private ProviderScheduleDAO providerScheduleDAO;
 
 	/**
 	 * Getters and Setters
@@ -131,6 +137,14 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
     public void setAppointmentRequestDAO(AppointmentRequestDAO appointmentRequestDAO) {
         this.appointmentRequestDAO = appointmentRequestDAO;
     }
+
+	public ProviderScheduleDAO getProviderScheduleDAO() {
+		return providerScheduleDAO;
+	}
+
+	public void setProviderScheduleDAO(ProviderScheduleDAO providerScheduleDAO) {
+		this.providerScheduleDAO = providerScheduleDAO;
+	}
 
     /**
 	 * @see org.openmrs.module.appointmentscheduling.api.AppointmentService#getAllAppointmentTypes()
@@ -1150,9 +1164,163 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 			}
 		}
 
-		appointment.setStatus(AppointmentStatus.SCHEDULED);
-		return Context.getService(AppointmentService.class).saveAppointment(
-				appointment);
+		if(appointment.getStatus() == null){
+			appointment.setStatus(AppointmentStatus.SCHEDULED);
+		}
+		Context.getService(AppointmentService.class).saveAppointment(appointment);
+
+		AppointmentStatusHistory history = new AppointmentStatusHistory(appointment, appointment.getStatus(), getAppointmentCurrentStatusStartDate(appointment), new Date());
+		Context.getService(AppointmentService.class).saveAppointmentStatusHistory(history);
+		return appointment;
+	}
+
+	@Override
+	@Transactional
+	public List<AppointmentStatusHistory> getAppointmentStatusHistories(Appointment appointment) {
+		return getAppointmentStatusHistoryDAO().getAppointmentStatusHistories(appointment);
+	}
+
+
+	//provider schedules
+
+	@Override
+	public List<ProviderSchedule> getAllProviderSchedules() {
+		return getProviderScheduleDAO().getAll();
+	}
+
+	@Override
+	public List<ProviderSchedule> getAllProviderSchedules(boolean includeVoided) {
+		return getProviderScheduleDAO().getAllData(includeVoided);
+	}
+
+	@Override
+	public ProviderSchedule getProviderSchedule(Integer ProviderScheduleId) {
+		return (ProviderSchedule) getProviderScheduleDAO().getById(ProviderScheduleId);
+	}
+
+	@Override
+	public ProviderSchedule getProviderScheduleByUuid(String uuid) {
+		return (ProviderSchedule) getProviderScheduleDAO().getByUuid(uuid);
+	}
+
+	@Override
+	public ProviderSchedule saveProviderSchedule(ProviderSchedule providerSchedule) throws APIException {
+		ValidateUtil.validate(providerSchedule);
+		return (ProviderSchedule) getProviderScheduleDAO().saveOrUpdate(providerSchedule);
+	}
+
+	@Override
+	public ProviderSchedule voidProviderSchedule(ProviderSchedule providerSchedule, String reason) {
+		providerSchedule.setVoided(true);
+		providerSchedule.setVoidReason(reason);
+		return (ProviderSchedule) getProviderScheduleDAO().saveOrUpdate(providerSchedule);
+	}
+
+	@Override
+	public void purgeProviderSchedule(ProviderSchedule providerSchedule) {
+		getProviderScheduleDAO().delete(providerSchedule);
+	}
+
+	@Override
+	public List<ProviderSchedule> getProviderSchedulesByConstraints(Location location, Provider provider, List<AppointmentType> appointmentTypes) {
+		return getProviderScheduleDAO().getProviderScheduleByConstraints(location, provider,null);
+	}
+
+	@Override
+	public TimeSlot getTimeslotForAppointment(Location location, Provider provider, AppointmentType type, Date appointmentDate){
+		TimeSlot requiredTimeslot = null;
+
+		List<TimeSlot> timeSlots = getTimeSlotsByConstraintsIncludingFull(type, setDateToStartOfDay(appointmentDate), setDateToEndOfDay(appointmentDate), provider, location);
+
+		for (TimeSlot timeSlot : timeSlots){
+			if ((timeSlot.getStartDate().getTime() / 1000 <= appointmentDate.getTime() / 1000) && ( appointmentDate.getTime() / 1000 <= timeSlot.getEndDate().getTime() / 1000)){
+				requiredTimeslot = timeSlot;
+
+			}
+		}
+
+		return requiredTimeslot;
+	}
+
+	@Override
+	public TimeSlot createTimeSlotUsindProviderSchedule(Date appointmentDate, Provider provider, Location location) {
+
+		List<ProviderSchedule> ar = getProviderScheduleDAO().getProviderScheduleByConstraints(location, provider, appointmentDate);
+		if (ar.size() > 1) {
+			TimeSlot timeSlot = new TimeSlot();
+			ProviderSchedule providerSchedule = ar.get(0);
+				Date startDate = getDateAndTime(appointmentDate, providerSchedule.getStartTime());
+				Date endDate = getDateAndTime(appointmentDate, providerSchedule.getEndTime());
+
+				Set<AppointmentType> types = new HashSet<AppointmentType>();
+
+				for (AppointmentType type : providerSchedule.getTypes()) {
+					types.add(type);
+				}
+
+				AppointmentBlock appointmentBlock = new AppointmentBlock(startDate, endDate, providerSchedule.getProvider(), providerSchedule.getLocation(), types);
+				AppointmentBlock block = (AppointmentBlock) getAppointmentBlockDAO().saveOrUpdate(appointmentBlock);
+
+				timeSlot.setAppointmentBlock(block);
+				timeSlot.setStartDate(block.getStartDate());
+				timeSlot.setEndDate(block.getEndDate());
+
+			return (TimeSlot) getTimeSlotDAO().saveOrUpdate(timeSlot);
+		} else {
+			throw new APIException("Appointment cannot be booked, Schedule does not exist");
+		}
+	}
+
+	public Date getDateAndTime(Date date, Date time) {
+		return new Date(
+				date.getYear(), date.getMonth(), date.getDate(),
+				time.getHours(), time.getMinutes(), time.getSeconds()
+		);
+	}
+	
+	@Override
+	public List<Appointment> getEarlyAppointments(Date fromDate, Date toDate, Location location,
+												  Provider provider, AppointmentType appointmentType) throws APIException {
+		List<AppointmentStatus> statuses = new ArrayList<AppointmentStatus>();
+		statuses.add(AppointmentStatus.COMPLETED);
+		statuses.add(AppointmentStatus.INCONSULTATION);
+
+		List<Appointment> allCompletedAppointments = getAppointmentsByConstraints(fromDate,
+				toDate, location, provider, appointmentType, null, statuses);
+
+		List<Appointment> earlyAppointments = new ArrayList<Appointment>();
+		for (Appointment ap : allCompletedAppointments) {
+			if (ap.getVisit().getStartDatetime().before(ap.getTimeSlot().getEndDate())) {
+				earlyAppointments.add(ap);
+			}
+		}
+		return earlyAppointments;
+	}
+
+	@Override
+	public List<Appointment> getLateAppointments(Date fromDate, Date toDate, Location location,
+												 Provider provider, AppointmentType appointmentType) throws APIException {
+		List<AppointmentStatus> statuses = new ArrayList<AppointmentStatus>();
+		statuses.add(AppointmentStatus.COMPLETED);
+		statuses.add(AppointmentStatus.INCONSULTATION);
+
+		List<Appointment> allCompletedAppointments = getAppointmentsByConstraints(fromDate,
+				toDate, location, provider, appointmentType, null, statuses);
+
+		List<Appointment> lateAppointments = new ArrayList<Appointment>();
+		for (Appointment ap : allCompletedAppointments) {
+			if (ap.getVisit().getStartDatetime().after(ap.getTimeSlot().getEndDate())) {
+				lateAppointments.add(ap);
+			}
+		}
+
+		return lateAppointments;
+	}
+
+	@Override
+	public List<AppointmentDailyCount> getAppointmentDailyCount(String fromDate, String toDate, Location location,
+																Provider provider, AppointmentStatus status) throws APIException {
+		return appointmentDAO.getAppointmentDailyCount(fromDate, toDate, location, provider, status);
 	}
 
 	private List<AppointmentBlock> getAppointmentBlockList(Location location,

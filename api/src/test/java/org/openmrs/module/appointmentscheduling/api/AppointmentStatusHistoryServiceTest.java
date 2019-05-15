@@ -41,7 +41,7 @@ import static junit.framework.Assert.assertNotNull;
  */
 public class AppointmentStatusHistoryServiceTest extends BaseModuleContextSensitiveTest {
 	
-	public static final int TOTAL_APPOINTMENTS = 12;
+	public static final int TOTAL_APPOINTMENTS = 14;
 	
 	private AppointmentService service;
 	
@@ -229,5 +229,13 @@ public class AppointmentStatusHistoryServiceTest extends BaseModuleContextSensit
 		    endDate, status);
 		assertEquals(averages.size(), 0);
 		
+	}
+
+	@Test
+	@Verifies(value = "should get all status histories of a given appointment", method = "getAppointmentStatusHistories()")
+	public void getAppointmentStatusHistories_shouldGetAllAppointmentStatusHistories() throws Exception {
+		List<AppointmentStatusHistory> appointmentStatusHistories = service.getAppointmentStatusHistories(
+				service.getAppointment(1)		);
+		assertEquals(2, appointmentStatusHistories.size());
 	}
 }
