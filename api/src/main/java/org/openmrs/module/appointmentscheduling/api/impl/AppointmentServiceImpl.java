@@ -29,6 +29,7 @@ import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.appointmentscheduling.Appointment;
 import org.openmrs.module.appointmentscheduling.Appointment.AppointmentStatus;
 import org.openmrs.module.appointmentscheduling.AppointmentBlock;
+import org.openmrs.module.appointmentscheduling.AppointmentDailyCount;
 import org.openmrs.module.appointmentscheduling.AppointmentRequest;
 import org.openmrs.module.appointmentscheduling.AppointmentStatusHistory;
 import org.openmrs.module.appointmentscheduling.AppointmentType;
@@ -1155,8 +1156,14 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements Appoin
 				appointment);
 	}
 
-	private List<AppointmentBlock> getAppointmentBlockList(Location location,
-			Date date, List<AppointmentType> appointmentTypes) {
+    @Override
+    public List<AppointmentDailyCount> getAppointmentDailyCount(String fromDate, String toDate, Location location,
+                        Provider provider, AppointmentStatus status) throws APIException {
+        return appointmentDAO.getAppointmentDailyCount(fromDate, toDate, location, provider, status);
+    }
+
+    private List<AppointmentBlock> getAppointmentBlockList(Location location,
+                                                           Date date, List<AppointmentType> appointmentTypes) {
 		return getAppointmentBlocksByTypes(setDateToStartOfDay(date),
 				setDateToEndOfDay(date), location.getId().toString(), null,
 				appointmentTypes);
